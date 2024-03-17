@@ -50,17 +50,15 @@ bool Database::openDatabase(const string& file) {
         return false;
     }
 
-    string msg;
     bool success = false;
     try {
         myDatabase.open(fileName.c_str());
-        msg = "Opened database successfully\n";
+        print("Opened database " + fileName +  " successfully\n");
         success = true;
     }
     catch (CppSQLite3Exception& e) {
-        msg = "Can't open database: "  + e.errorMessage() + "\n";
+        print("Can't open database: "  + e.errorMessage() + "\n");
     }
-    print(msg);
     return success;
 }
 
@@ -120,15 +118,13 @@ bool Database::sqlExec(const std::string& sqlCmd) {
  * @return CppSQLite3Query& 
  */
 CppSQLite3Query& Database::queryDatabase(const std::string& sqlQuery) {
-    string msg;
     try {
         queryResult = myDatabase.execQuery(sqlQuery.c_str());
-        msg = "Operation Successful\n";
+        print("Operation Successful\n");
     }
     catch (CppSQLite3Exception& e) {
-        msg = "Operation Unsuccessful: " + e.errorMessage() + "\n";
+        print("Operation Unsuccessful: " + e.errorMessage() + "\n");
     }
-    print(msg);
     return queryResult;
 }
 
@@ -165,6 +161,7 @@ inline void Database::print(const std::string& statement) {
     }
 }
 
+
 Database* Database::instance(){
     static Database db;
     return &db;
@@ -172,10 +169,9 @@ Database* Database::instance(){
 
 
 
-
 CppSQLite3Table& Database::getTable(const std::string& tableName) {
     try {
-        tableResult = myDatabase.getTable(tableName.c_str());
+        tableResult = myDatabase.getTable(("select * from " + tableName).c_str());
         print("Operation Successful\n");
     }
     catch (CppSQLite3Exception& e) {
