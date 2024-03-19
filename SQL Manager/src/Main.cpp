@@ -1,8 +1,10 @@
-#include <iostream>
-#include <CppSQLite3.h>
+#include "SQLManagerGUI.h"
+#include <QtWidgets/QApplication>
 
-
-
-int main() {
-	std::cout << "Hello World!" << std::endl;
+int main(int argc, char *argv[])
+{
+    QApplication a(argc, argv);
+    SQLManagerGUI w;
+    w.show();
+    return a.exec();
 }
