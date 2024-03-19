@@ -25,6 +25,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CreatePage.cpp" />
+    <ClCompile Include="InsertPage.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\SQLManagerGUI.cpp" />
   </ItemGroup>
@@ -35,12 +37,20 @@
     <QtRcc Include="src\SQLManagerGUI.qrc" />
   </ItemGroup>
   <ItemGroup>
+    <QtUic Include="CreatePage.ui" />
+    <QtUic Include="InsertPage.ui" />
     <QtUic Include="src\SQLManagerGUI.ui" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Backend\Backend.vcxproj">
       <Project>{50fb31cd-ab3e-4054-89ce-7ea554f79839}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="CreatePage.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="InsertPage.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E72D1F0A-76E8-4C9F-B374-7D195F1D9A12}</ProjectGuid>

@@ -29,9 +29,21 @@
     <ClCompile Include="src\SQLManagerGUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CreatePage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InsertPage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="src\SQLManagerGUI.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="CreatePage.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="InsertPage.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -42,6 +54,12 @@
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="src\SQLManagerGUI.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="CreatePage.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="InsertPage.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>
