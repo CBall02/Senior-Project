@@ -1,41 +1,31 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31410.357
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34622.214
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SQL Manager", "SQL Manager\SQL Manager.vcxproj", "{4B359FEE-A4F6-438D-A1EC-2D99D9632AAC}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SQL Manager", "SQL Manager\SQL Manager.vcxproj", "{E72D1F0A-76E8-4C9F-B374-7D195F1D9A12}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Backend", "Backend\Backend.vcxproj", "{E711BEE3-D6C8-40E6-93AC-79F163147457}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Backend", "Backend\Backend.vcxproj", "{50FB31CD-AB3E-4054-89CE-7EA554F79839}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
-		Debug|x86 = Debug|x86
 		Release|x64 = Release|x64
-		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4B359FEE-A4F6-438D-A1EC-2D99D9632AAC}.Debug|x64.ActiveCfg = Debug|x64
-		{4B359FEE-A4F6-438D-A1EC-2D99D9632AAC}.Debug|x64.Build.0 = Debug|x64
-		{4B359FEE-A4F6-438D-A1EC-2D99D9632AAC}.Debug|x86.ActiveCfg = Debug|Win32
-		{4B359FEE-A4F6-438D-A1EC-2D99D9632AAC}.Debug|x86.Build.0 = Debug|Win32
-		{4B359FEE-A4F6-438D-A1EC-2D99D9632AAC}.Release|x64.ActiveCfg = Release|x64
-		{4B359FEE-A4F6-438D-A1EC-2D99D9632AAC}.Release|x64.Build.0 = Release|x64
-		{4B359FEE-A4F6-438D-A1EC-2D99D9632AAC}.Release|x86.ActiveCfg = Release|Win32
-		{4B359FEE-A4F6-438D-A1EC-2D99D9632AAC}.Release|x86.Build.0 = Release|Win32
-		{E711BEE3-D6C8-40E6-93AC-79F163147457}.Debug|x64.ActiveCfg = Debug|x64
-		{E711BEE3-D6C8-40E6-93AC-79F163147457}.Debug|x64.Build.0 = Debug|x64
-		{E711BEE3-D6C8-40E6-93AC-79F163147457}.Debug|x86.ActiveCfg = Debug|Win32
-		{E711BEE3-D6C8-40E6-93AC-79F163147457}.Debug|x86.Build.0 = Debug|Win32
-		{E711BEE3-D6C8-40E6-93AC-79F163147457}.Release|x64.ActiveCfg = Release|x64
-		{E711BEE3-D6C8-40E6-93AC-79F163147457}.Release|x64.Build.0 = Release|x64
-		{E711BEE3-D6C8-40E6-93AC-79F163147457}.Release|x86.ActiveCfg = Release|Win32
-		{E711BEE3-D6C8-40E6-93AC-79F163147457}.Release|x86.Build.0 = Release|Win32
+		{E72D1F0A-76E8-4C9F-B374-7D195F1D9A12}.Debug|x64.ActiveCfg = Debug|x64
+		{E72D1F0A-76E8-4C9F-B374-7D195F1D9A12}.Debug|x64.Build.0 = Debug|x64
+		{E72D1F0A-76E8-4C9F-B374-7D195F1D9A12}.Release|x64.ActiveCfg = Release|x64
+		{E72D1F0A-76E8-4C9F-B374-7D195F1D9A12}.Release|x64.Build.0 = Release|x64
+		{50FB31CD-AB3E-4054-89CE-7EA554F79839}.Debug|x64.ActiveCfg = Debug|x64
+		{50FB31CD-AB3E-4054-89CE-7EA554F79839}.Debug|x64.Build.0 = Debug|x64
+		{50FB31CD-AB3E-4054-89CE-7EA554F79839}.Release|x64.ActiveCfg = Release|x64
+		{50FB31CD-AB3E-4054-89CE-7EA554F79839}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {565C4C6D-7671-4022-8B85-257F0BD87D60}
+		SolutionGuid = {B53AE078-4D4F-4149-B19E-0117CBE7C27A}
 	EndGlobalSection
 EndGlobal

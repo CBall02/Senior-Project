@@ -2,3 +2,6 @@
 **/bin
 *.user
 *.db
+SQL Manager/x64
+SQL Manager/Debug
+SQL Manager/Release
