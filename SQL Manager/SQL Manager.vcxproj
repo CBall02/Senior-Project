@@ -25,8 +25,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CreatePage.cpp" />
-    <ClCompile Include="InsertPage.cpp" />
+    <ClCompile Include="src\CreatePage.cpp" />
+    <ClCompile Include="src\InsertPage.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\SQLManagerGUI.cpp" />
   </ItemGroup>
@@ -37,8 +37,8 @@
     <QtRcc Include="src\SQLManagerGUI.qrc" />
   </ItemGroup>
   <ItemGroup>
-    <QtUic Include="CreatePage.ui" />
-    <QtUic Include="InsertPage.ui" />
+    <QtUic Include="src\CreatePage.ui" />
+    <QtUic Include="src\InsertPage.ui" />
     <QtUic Include="src\SQLManagerGUI.ui" />
   </ItemGroup>
   <ItemGroup>
@@ -47,10 +47,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="CreatePage.h" />
+    <QtMoc Include="src\CreatePage.h" />
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="InsertPage.h" />
+    <QtMoc Include="src\InsertPage.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E72D1F0A-76E8-4C9F-B374-7D195F1D9A12}</ProjectGuid>
