@@ -1,7 +1,7 @@
 #include "InsertPage.h"
 
 InsertPage::InsertPage(QWidget *parent)
-	: QMainWindow(parent)
+	: QDialog(parent)
 {
 	ui.setupUi(this);
 }

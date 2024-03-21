@@ -1,6 +1,6 @@
 <UI version="4.0" >
  <class>InsertPageClass</class>
- <widget class="QMainWindow" name="InsertPageClass" >
+ <widget class="QDialog" name="InsertPageClass" >
   <property name="objectName" >
    <string notr="true">InsertPageClass</string>
   </property>
@@ -14,7 +14,7 @@
   </property>
   <property name="windowTitle" >
    <string>InsertPage</string>
-  </property>  <widget class="QMenuBar" name="menuBar" />  <widget class="QToolBar" name="mainToolBar" />  <widget class="QWidget" name="centralWidget" />  <widget class="QStatusBar" name="statusBar" />
+  </property>$centralwidget$
  </widget>
  <layoutDefault spacing="6" margin="11" />
  <pixmapfunction></pixmapfunction>
