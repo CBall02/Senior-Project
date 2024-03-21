@@ -1,7 +1,7 @@
 #include "CreatePage.h"
 
 CreatePage::CreatePage(QWidget *parent)
-	: QMainWindow(parent)
+	: QDialog(parent)
 {
 	ui.setupUi(this);
 }

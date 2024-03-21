@@ -1,9 +1,9 @@
 #pragma once
 
-#include <QMainWindow>
+#include <QDialog>
 #include "ui_InsertPage.h"
 
-class InsertPage : public QMainWindow
+class InsertPage : public QDialog
 {
 	Q_OBJECT
 
