@@ -3,6 +3,7 @@
 #include <QDialog>
 #include "ui_InsertPage.h"
 
+
 class InsertPage : public QDialog
 {
 	Q_OBJECT
@@ -13,4 +14,7 @@ public:
 
 private:
 	Ui::InsertPageClass ui;
+	int numAttributes = 1;
+public slots:
+	void on_insertButton_clicked();
 };
