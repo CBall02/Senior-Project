@@ -13,8 +13,11 @@ public:
 
 private:
     Ui::SQLManagerGUIClass ui;
+    QString databaseFilepath;
+
 
 private slots:
     void on_createButton_clicked();
     void on_insertButton_clicked();
+    void on_actionOpen_triggered();
 };
