@@ -2,6 +2,7 @@
 
 #include <QtWidgets/QMainWindow>
 #include "ui_SQLManagerGUI.h"
+#include "../../Backend/src/database.h"
 
 class SQLManagerGUI : public QMainWindow
 {
@@ -14,7 +15,6 @@ public:
 private:
     Ui::SQLManagerGUIClass ui;
     QString databaseFilepath;
-
 
 private slots:
     void on_createButton_clicked();
