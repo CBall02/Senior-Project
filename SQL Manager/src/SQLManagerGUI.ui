@@ -34,16 +34,16 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="insertButton">
+       <widget class="QPushButton" name="createButton">
         <property name="text">
-         <string>Insert</string>
+         <string>Create</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="createButton">
+       <widget class="QPushButton" name="insertButton">
         <property name="text">
-         <string>Create</string>
+         <string>Insert</string>
         </property>
        </widget>
       </item>
