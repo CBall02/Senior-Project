@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QDialog>
+#include <vector>
 #include "ui_CreatePage.h"
 #include "../../Backend/src/database.h"
 
@@ -15,6 +16,7 @@ public:
 private:
 	Ui::CreatePageClass ui;
 	int numAttributes = 1;
+	std::vector<QLineEdit*> table;
 
 
 private slots:
