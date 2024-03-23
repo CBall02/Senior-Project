@@ -13,4 +13,8 @@ public:
 
 private:
     Ui::SQLManagerGUIClass ui;
+
+private slots:
+    void on_createButton_clicked();
+    void on_insertButton_clicked();
 };

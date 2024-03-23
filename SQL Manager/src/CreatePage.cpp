@@ -16,7 +16,7 @@ void CreatePage::on_plusButton_clicked()
 	QHBoxLayout* newLine = new QHBoxLayout();
 	newLine->addWidget(new QLineEdit());
 	newLine->addWidget(new QLineEdit());
-	ui.verticalLayout->insertLayout(ui.verticalLayout->count() - 2, newLine);
+	ui.verticalLayout->insertLayout(ui.verticalLayout->count() - 1, newLine);
 }
 
 
