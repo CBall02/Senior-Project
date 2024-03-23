@@ -1,9 +1,8 @@
 #include "CreatePage.h"
 
-CreatePage::CreatePage(Database* database, QWidget *parent)
+CreatePage::CreatePage(QWidget *parent)
 	: QDialog(parent)
 {
-	this->database = database;
 	ui.setupUi(this);
 }
 
@@ -15,8 +14,12 @@ CreatePage::~CreatePage()
 void CreatePage::on_plusButton_clicked()
 {
 	QHBoxLayout* newLine = new QHBoxLayout();
-	newLine->addWidget(new QLineEdit());
-	newLine->addWidget(new QLineEdit());
+	QLineEdit* name = new QLineEdit();
+	QLineEdit* type = new QLineEdit();
+	newLine->addWidget(name);
+	newLine->addWidget(type);
+	table.push_back(name);
+	table.push_back(type);
 	ui.verticalLayout->insertLayout(ui.verticalLayout->count() - 1, newLine);
 	numAttributes++;
 }
@@ -31,16 +34,21 @@ void CreatePage::on_createButton_clicked()
 	QString sqlCommand = "CREATE TABLE ";
 	sqlCommand += ui.nameEdit->text();
 	sqlCommand += "\n{\n";
-	for (int i = 0; i < numAttributes; i++)
+	sqlCommand += ui.att1name->text() + ' ' + ui.att1type->text() + '\n';
+	for (int i = 0; i < numAttributes - 1; i++)
 	{
-		QBoxLayout* input_at_i = (QBoxLayout*) ui.verticalLayout->itemAt(i + 3);
-		QLineEdit* name_at_i = (QLineEdit*)input_at_i->itemAt(0);
-		QLineEdit* type_at_i = (QLineEdit*)input_at_i->itemAt(1);
-		sqlCommand += name_at_i->text() + ' ' + type_at_i->text() + '\n';
+		QLineEdit* name = table.at(2 * i);
+		QLineEdit* type = table.at(2 * i + 1);
+		sqlCommand += name->text() + ' ' + type->text() + '\n';
 	}
 	sqlCommand += "};";
-	if (database->sqlExec(sqlCommand.toStdString()))
+	if (Database::instance()->sqlExec(sqlCommand.toStdString()))
 	{
 
+		close();
+	}
+	else
+	{
+		
 	}
 }
