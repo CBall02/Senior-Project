@@ -2,6 +2,7 @@
 
 #include <QDialog>
 #include "ui_CreatePage.h"
+#include "../../Backend/src/database.h"
 
 class CreatePage : public QDialog
 {
@@ -13,4 +14,10 @@ public:
 
 private:
 	Ui::CreatePageClass ui;
+	int numAttributes = 1;
+
+
+private slots:
+	void on_plusButton_clicked();
+	void on_createButton_clicked();
 };
