@@ -9,13 +9,12 @@ class CreatePage : public QDialog
 	Q_OBJECT
 
 public:
-	CreatePage(Database* database = nullptr, QWidget *parent = nullptr);
+	CreatePage(QWidget *parent = nullptr);
 	~CreatePage();
 
 private:
 	Ui::CreatePageClass ui;
 	int numAttributes = 1;
-	Database* database;
 
 
 private slots:

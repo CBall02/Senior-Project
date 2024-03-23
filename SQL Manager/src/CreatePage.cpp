@@ -1,9 +1,8 @@
 #include "CreatePage.h"
 
-CreatePage::CreatePage(Database* database, QWidget *parent)
+CreatePage::CreatePage(QWidget *parent)
 	: QDialog(parent)
 {
-	this->database = database;
 	ui.setupUi(this);
 }
 
@@ -39,7 +38,7 @@ void CreatePage::on_createButton_clicked()
 		sqlCommand += name_at_i->text() + ' ' + type_at_i->text() + '\n';
 	}
 	sqlCommand += "};";
-	if (database->sqlExec(sqlCommand.toStdString()))
+	if (Database::instance()->sqlExec(sqlCommand.toStdString()))
 	{
 
 	}
