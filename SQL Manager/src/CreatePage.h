@@ -13,4 +13,7 @@ public:
 
 private:
 	Ui::CreatePageClass ui;
+
+public slots:
+	void on_plusButton_clicked();
 };
