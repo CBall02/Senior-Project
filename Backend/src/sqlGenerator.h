@@ -300,6 +300,91 @@ namespace sqlGenerator {
         std::string _sql;
     };
 
+
+
+    // My Code
+
+    class CreateModel : public SqlModel
+    {
+    public:
+        CreateModel() {}
+        virtual ~CreateModel() {}
+
+        CreateModel& columns(const std::string& c, const std::string& type, const bool& nullAllowed = true, const bool& isPrimary = false) {
+            _columns.push_back(c);
+            _types.push_back(type);
+            _primary.push_back(isPrimary);
+            _nullCondition.push_back(nullAllowed);
+            return *this;
+        }
+
+        CreateModel& operator()(const std::string& c, const std::string& type, const bool& nullAllowed = true, const bool& isPrimary = false) {
+            return columns(c, type, nullAllowed, isPrimary);
+        }
+
+        CreateModel& tableName(const std::string& table_name) {
+            _table_name = table_name;
+            return *this;
+        }
+
+        virtual const std::string& str() override {
+            _sql.clear();
+
+            _sql.append("create table ");
+
+            _sql.append(_table_name);
+            _sql.append("(");
+            size_t size = _columns.size();
+            bool hasPrimary = false;
+            for (size_t i = 0; i < size; ++i) {
+                std::string line;
+                line.append(_columns[i] + " ");
+                line.append(_types[i]);
+                if (_primary[i] && !hasPrimary) {
+                    line.append(" primary key");
+                }
+                else if (hasPrimary) {
+                    throw std::runtime_error("Table already has primary key");
+                }
+                if (!_nullCondition[i]) {
+                    line.append(" not null");
+                }
+                _sql.append(line);
+                if (i < size - 1) {
+                    _sql.append(", ");
+                }
+                else {
+                    _sql.append(")");
+                }
+            }
+            return _sql;
+        }
+
+        CreateModel& reset() {
+            _table_name.clear();
+            _columns.clear();
+            _types.clear();
+            _primary.clear();
+            _nullCondition.clear();
+            return *this;
+        }
+
+        friend inline std::ostream& operator<< (std::ostream& out, CreateModel& mod) {
+            out << mod.str();
+            return out;
+        }
+
+    protected:
+        std::string _table_name;
+        std::vector<std::string> _columns;
+        std::vector<std::string> _types;
+        std::vector<bool> _primary;
+        std::vector<bool> _nullCondition;
+    };
+
+    // End My code
+
+
     class SelectModel : public SqlModel
     {
     public:
