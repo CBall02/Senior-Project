@@ -45,6 +45,7 @@ Database::~Database(){
  * @param file database to open
  */
 bool Database::openDatabase(const string& file) {
+    if (file.empty()) { return false; }
     fileName = file;
     if(!closeDatabase()){
         return false;
