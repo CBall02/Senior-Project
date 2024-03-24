@@ -44,7 +44,7 @@ void CreatePage::on_createButton_clicked()
 	}
 	if (Database::instance()->sqlExec(sqlCommand.str()))
 	{
-
+		emit tableCreated();
 		close();
 	}
 	else

@@ -13,6 +13,9 @@ public:
 	CreatePage(QWidget *parent = nullptr);
 	~CreatePage();
 
+signals:
+	void tableCreated();
+
 private:
 	Ui::CreatePageClass ui;
 	int numAttributes = 1;
