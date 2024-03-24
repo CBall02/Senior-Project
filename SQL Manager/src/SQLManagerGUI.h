@@ -2,7 +2,7 @@
 
 #include <QtWidgets/QMainWindow>
 #include "ui_SQLManagerGUI.h"
-#include "../../Backend/src/database.h"
+#include "database.h"
 
 class SQLManagerGUI : public QMainWindow
 {

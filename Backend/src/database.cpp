@@ -134,9 +134,9 @@ CppSQLite3Query& Database::queryDatabase(const std::string& sqlQuery) {
  * 
  * @return CppSQLite3Query& 
  */
-CppSQLite3Query& Database::getMostRecentQuery() {
-    return queryResult;
-}
+//CppSQLite3Query& Database::getMostRecentQuery() {
+//    return queryResult;
+//}
 
 
 /**
@@ -178,4 +178,31 @@ CppSQLite3Table& Database::getTable(const std::string& tableName) {
         print("Operation Unsuccessful: " + e.errorMessage() + "\n");
     }
     return tableResult;
+}
+
+
+vector<string> Database::getDatabaseTables() {
+    auto result = queryDatabase("SELECT name FROM sqlite_schema WHERE type = 'table' AND name NOT LIKE 'sqlite_%'; ");
+    vector<string> ret;
+    while (!result.eof()) {
+        for (int i = 0; i < result.numFields(); i++) {
+            ret.push_back(result.fieldValue(i));
+        }
+        result.nextRow();
+    }
+    return ret;
+}
+
+
+string Database::getTableSchema(string tableName) {
+    if (!tableExists(tableName)) { return ""; }
+
+    auto result = queryDatabase("SELECT sql FROM sqlite_schema WHERE name='" + tableName + "';");
+    vector<string> ret;
+
+    if (!result.eof()) {
+        return result.fieldValue(0);
+    }
+
+    return "";
 }
