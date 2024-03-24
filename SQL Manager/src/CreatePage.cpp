@@ -33,7 +33,7 @@ void CreatePage::on_createButton_clicked()
 {
 	QString sqlCommand = "CREATE TABLE ";
 	sqlCommand += ui.nameEdit->text();
-	sqlCommand += "\n{\n";
+	sqlCommand += "\n(\n";
 	sqlCommand += ui.att1name->text() + ' ' + ui.att1type->text() + '\n';
 	for (int i = 0; i < numAttributes - 1; i++)
 	{
@@ -41,7 +41,7 @@ void CreatePage::on_createButton_clicked()
 		QLineEdit* type = table.at(2 * i + 1);
 		sqlCommand += name->text() + ' ' + type->text() + '\n';
 	}
-	sqlCommand += "};";
+	sqlCommand += ");";
 	if (Database::instance()->sqlExec(sqlCommand.toStdString()))
 	{
 
