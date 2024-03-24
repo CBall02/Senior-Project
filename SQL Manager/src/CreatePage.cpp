@@ -1,4 +1,5 @@
 #include "CreatePage.h"
+#include <sqlGenerator.h>
 
 CreatePage::CreatePage(QWidget *parent)
 	: QDialog(parent)
@@ -31,18 +32,17 @@ void CreatePage::on_plusButton_clicked()
 */
 void CreatePage::on_createButton_clicked()
 {
-	QString sqlCommand = "CREATE TABLE ";
-	sqlCommand += ui.nameEdit->text();
-	sqlCommand += "\n(\n";
-	sqlCommand += ui.att1name->text() + ' ' + ui.att1type->text() + '\n';
+	sqlGenerator::CreateModel sqlCommand;
+	sqlCommand.tableName(ui.nameEdit->text().toStdString());
+	sqlCommand.columns(ui.att1name->text().toStdString(), ui.att1type->text().toStdString());
+
 	for (int i = 0; i < numAttributes - 1; i++)
 	{
 		QLineEdit* name = table.at(2 * i);
 		QLineEdit* type = table.at(2 * i + 1);
-		sqlCommand += name->text() + ' ' + type->text() + '\n';
+		sqlCommand.columns(name->text().toStdString(), type->text().toStdString());
 	}
-	sqlCommand += ");";
-	if (Database::instance()->sqlExec(sqlCommand.toStdString()))
+	if (Database::instance()->sqlExec(sqlCommand.str()))
 	{
 
 		close();
