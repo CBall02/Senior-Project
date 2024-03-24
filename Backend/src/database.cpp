@@ -198,7 +198,6 @@ string Database::getTableSchema(string tableName) {
     if (!tableExists(tableName)) { return ""; }
 
     auto result = queryDatabase("SELECT sql FROM sqlite_schema WHERE name='" + tableName + "';");
-    vector<string> ret;
 
     if (!result.eof()) {
         return result.fieldValue(0);
