@@ -1,6 +1,6 @@
 #include "SQLManagerGUI.h"
 #include "ui_SQLManagerGUI.h"
-#include "../../Backend/src/database.h"
+#include "database.h"
 #include "CreatePage.h"
 #include "InsertPage.h"
 #include <QFileDialog>

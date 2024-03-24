@@ -3,7 +3,7 @@
 #include <QDialog>
 #include <vector>
 #include "ui_CreatePage.h"
-#include "../../Backend/src/database.h"
+#include "database.h"
 
 class CreatePage : public QDialog
 {
