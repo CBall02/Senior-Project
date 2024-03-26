@@ -25,6 +25,20 @@ void CreatePage::on_plusButton_clicked()
 	numAttributes++;
 }
 
+// remove a row of line edits from vertical layout if numAttributes > 1
+void CreatePage::on_minusButton_clicked()
+{
+	if (numAttributes > 1)
+	{
+		delete table.back();
+		table.pop_back();
+		delete table.back();
+		table.pop_back();
+		delete ui.verticalLayout->takeAt(ui.verticalLayout->count() - 2);
+		numAttributes--;
+	}
+}
+
 /*	
 	read input from all line edits
 	create table with given name and properties
