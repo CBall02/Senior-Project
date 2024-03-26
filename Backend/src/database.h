@@ -14,9 +14,12 @@ public:
     bool closeDatabase();
     bool sqlExec(const std::string& sqlCmd);
     CppSQLite3Query& queryDatabase(const std::string& sqlQuery);
-    CppSQLite3Query& getMostRecentQuery();
+    //CppSQLite3Query& getMostRecentQuery();
     bool tableExists(const std::string& tableName);
     CppSQLite3Table& getTable(const std::string& tableName);
+    std::vector<std::string> getDatabaseTables();
+    std::string getTableSchema(std::string tableName);
+
     friend std::ostream& operator<<(std::ostream& os, const Database& db){
         return os;
     }

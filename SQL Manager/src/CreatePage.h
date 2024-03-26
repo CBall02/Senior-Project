@@ -3,7 +3,7 @@
 #include <QDialog>
 #include <vector>
 #include "ui_CreatePage.h"
-#include "../../Backend/src/database.h"
+#include "database.h"
 
 class CreatePage : public QDialog
 {
@@ -12,6 +12,9 @@ class CreatePage : public QDialog
 public:
 	CreatePage(QWidget *parent = nullptr);
 	~CreatePage();
+
+signals:
+	void tableCreated();
 
 private:
 	Ui::CreatePageClass ui;
