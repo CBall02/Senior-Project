@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QDialog>
+#include <qcombobox.h>
 #include <vector>
 #include "ui_CreatePage.h"
 #include "database.h"
@@ -17,9 +18,12 @@ signals:
 	void tableCreated();
 
 private:
+	void addAttribute();
+
 	Ui::CreatePageClass ui;
-	int numAttributes = 1;
-	std::vector<QLineEdit*> table;
+	int numAttributes = 0;
+	std::vector<QLineEdit*> tableNames;
+	std::vector<QComboBox*> tableTypes;
 
 
 private slots:
