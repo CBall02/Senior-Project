@@ -404,6 +404,43 @@ namespace sqlGenerator {
         std::vector<std::tuple<bool, std::string, std::string>> _foriegnKeys;
     };
 
+
+    class DropModel : public SqlModel
+    {
+    public:
+        DropModel() {}
+        virtual ~DropModel() {}
+
+        DropModel& tableName(const std::string& table_name) {
+            _table_name = table_name;
+            return *this;
+        }
+
+        DropModel& operator()(const std::string& tableName){
+            return this->tableName(tableName);
+        }
+
+        virtual const std::string& str() override {
+            _sql.clear();
+            _sql.append("drop table ");
+            _sql.append(_table_name);
+            return _sql;
+        }
+
+        DropModel& reset() {
+            _table_name.clear();
+            return *this;
+        }
+
+        friend inline std::ostream& operator<< (std::ostream& out, DropModel& mod) {
+            out << mod.str();
+            return out;
+        }
+
+    protected:
+        std::string _table_name;
+    };
+
     // End My code
 
 
