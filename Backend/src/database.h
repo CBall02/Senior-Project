@@ -30,6 +30,7 @@ private:
     Database(const std::string& file = ":memory:");
     BoolReturn executeNoReturnSQL(const std::string& sqlCmd);
     inline void print(const std::string& statement);
+    inline std::exception_ptr rethrow(CppSQLite3Exception& e);
 
 private:
     CppSQLite3DB myDatabase;

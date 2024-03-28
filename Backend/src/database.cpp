@@ -63,7 +63,7 @@ BoolReturn Database::openDatabase(const string& file) {
     }
     catch (CppSQLite3Exception& e) {
         print("Can't open database: "  + e.errorMessage() + "\n");
-        err = std::current_exception();
+        err = rethrow(e);
         success = false;
     }
     return BoolReturn(success, err);
@@ -84,7 +84,7 @@ BoolReturn Database::closeDatabase() {
     }
     catch (CppSQLite3Exception& e) {
         print("Can't close database: " + e.errorMessage() + "\n");
-        err = std::current_exception();
+        err = rethrow(e);
         res = false;
     }
     return BoolReturn(res, err);
@@ -107,7 +107,7 @@ BoolReturn Database::executeNoReturnSQL(const string& sqlCmd){
     }
     catch (CppSQLite3Exception& e) {
         print("Operation Unsuccessful: " + e.errorMessage() + "\n");
-        err = std::current_exception();
+        err = rethrow(e);
         res = false;
     }
     return BoolReturn(res, err);
@@ -140,7 +140,7 @@ QueryReturn Database::queryDatabase(const std::string& sqlQuery) {
     }
     catch (CppSQLite3Exception& e) {
         print("Operation Unsuccessful: " + e.errorMessage() + "\n");
-        err = std::current_exception();
+        err = rethrow(e);
     }
     return QueryReturn(res, err);
 }
@@ -178,6 +178,15 @@ inline void Database::print(const std::string& statement) {
     }
 }
 
+inline std::exception_ptr Database::rethrow(CppSQLite3Exception& e) {
+    try {
+        throw std::runtime_error(e.errorMessage());
+    }
+    catch (const std::exception& e) {
+        return std::current_exception();
+    }
+}
+
 
 Database* Database::instance(){
     static Database db;
@@ -195,7 +204,7 @@ TableReturn Database::getTable(const std::string& tableName) {
     }
     catch (CppSQLite3Exception& e) {
         print("Operation Unsuccessful: " + e.errorMessage() + "\n");
-        err = std::current_exception();
+        err = rethrow(e);
     }
     return TableReturn(tableResult, err);
 }

@@ -9,12 +9,11 @@ DatabaseReturn::DatabaseReturn(std::exception_ptr e) {
 }
 
 std::string DatabaseReturn::what() {
-	if (!err) { return ""; }
-
 	try {
-		std::rethrow_exception(err);
+		if (err)
+			std::rethrow_exception(err);
 	}
-	catch (std::exception& e) {
+	catch (const std::exception& e) {
 		return e.what();
 	}
 	return "";
