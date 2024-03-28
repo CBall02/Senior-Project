@@ -202,15 +202,15 @@ TableReturn Database::getTable(const std::string& tableName) {
 
 
 vector<string> Database::getDatabaseTables() {
-    auto result = queryDatabase("SELECT name FROM sqlite_schema WHERE type = 'table' AND name NOT LIKE 'sqlite_%'; ");
+    auto query = queryDatabase("SELECT name FROM sqlite_schema WHERE type = 'table' AND name NOT LIKE 'sqlite_%'; ");
     vector<string> ret;
-    if (!result) { return ret; }
+    if (!query) { return ret; }
 
-    while (!result.result.eof()) {
-        for (int i = 0; i < result.result.numFields(); i++) {
-            ret.push_back(result.result.fieldValue(i));
+    while (!query.result.eof()) {
+        for (int i = 0; i < query.result.numFields(); i++) {
+            ret.push_back(query.result.fieldValue(i));
         }
-        result.result.nextRow();
+        query.result.nextRow();
     }
     return ret;
 }
