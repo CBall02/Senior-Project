@@ -310,16 +310,26 @@ namespace sqlGenerator {
         CreateModel() {}
         virtual ~CreateModel() {}
 
-        CreateModel& columns(const std::string& c, const std::string& type, const bool& nullAllowed = true, const bool& isPrimary = false) {
+        CreateModel& columns(const std::string& c, const std::string& type, 
+                             const bool& isPrimary = false, 
+                             const bool& noNull = false,
+                             const bool& unique = false) 
+        {
             _columns.push_back(c);
             _types.push_back(type);
             _primary.push_back(isPrimary);
-            _nullCondition.push_back(nullAllowed);
+            _nullCondition.push_back(isPrimary ? true : noNull);
+            _uniqueCondition.push_back(unique);
+
             return *this;
         }
 
-        CreateModel& operator()(const std::string& c, const std::string& type, const bool& nullAllowed = true, const bool& isPrimary = false) {
-            return columns(c, type, nullAllowed, isPrimary);
+        CreateModel& operator()(const std::string& c, const std::string& type,
+                                const bool& isPrimary = false,
+                                const bool& noNull = false,
+                                const bool& unique = false) 
+        {
+            return columns(c, type, isPrimary, noNull, unique);
         }
 
         CreateModel& tableName(const std::string& table_name) {
@@ -335,28 +345,37 @@ namespace sqlGenerator {
             _sql.append(_table_name);
             _sql.append("(");
             size_t size = _columns.size();
-            bool hasPrimary = false;
+            std::vector<std::string> primaries;
             for (size_t i = 0; i < size; ++i) {
                 std::string line;
                 line.append(_columns[i] + " ");
                 line.append(_types[i]);
-                if (_primary[i] && !hasPrimary) {
-                    line.append(" primary key");
+                if (_primary[i]) {
+                    primaries.emplace_back(_columns[i]);
                 }
-                else if (hasPrimary) {
-                    throw std::runtime_error("Table already has primary key");
-                }
-                if (!_nullCondition[i]) {
+                if (_nullCondition[i]) {
                     line.append(" not null");
+                }
+                if (_uniqueCondition[i] && !_primary[i]) {
+                    line.append(" unique");
                 }
                 _sql.append(line);
                 if (i < size - 1) {
                     _sql.append(", ");
                 }
-                else {
-                    _sql.append(")");
-                }
             }
+            if (!primaries.empty()) {
+                _sql.append(", primary key(");
+                for (size_t i = 0; i < primaries.size(); i++) {
+                    _sql.append(primaries[i]);
+                    if (i < primaries.size() - 1) {
+                        _sql.append(", ");
+                    }
+                }
+                _sql.append(")");
+            }
+
+            _sql.append(")");
             return _sql;
         }
 
@@ -366,6 +385,7 @@ namespace sqlGenerator {
             _types.clear();
             _primary.clear();
             _nullCondition.clear();
+            _foriegnKeys.clear();
             return *this;
         }
 
@@ -380,6 +400,45 @@ namespace sqlGenerator {
         std::vector<std::string> _types;
         std::vector<bool> _primary;
         std::vector<bool> _nullCondition;
+        std::vector<bool> _uniqueCondition;
+        std::vector<std::tuple<bool, std::string, std::string>> _foriegnKeys;
+    };
+
+
+    class DropModel : public SqlModel
+    {
+    public:
+        DropModel() {}
+        virtual ~DropModel() {}
+
+        DropModel& tableName(const std::string& table_name) {
+            _table_name = table_name;
+            return *this;
+        }
+
+        DropModel& operator()(const std::string& tableName){
+            return this->tableName(tableName);
+        }
+
+        virtual const std::string& str() override {
+            _sql.clear();
+            _sql.append("drop table ");
+            _sql.append(_table_name);
+            return _sql;
+        }
+
+        DropModel& reset() {
+            _table_name.clear();
+            return *this;
+        }
+
+        friend inline std::ostream& operator<< (std::ostream& out, DropModel& mod) {
+            out << mod.str();
+            return out;
+        }
+
+    protected:
+        std::string _table_name;
     };
 
     // End My code
