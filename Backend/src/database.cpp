@@ -1,9 +1,11 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <exception>
 
 #include "database.h"
 #include "CppSQLite3.h"
+#include "databaseReturn.h"
 
 #ifdef _DEBUG
 #define printDebug true
@@ -44,14 +46,16 @@ Database::~Database(){
  * 
  * @param file database to open
  */
-bool Database::openDatabase(const string& file) {
+BoolReturn Database::openDatabase(const string& file) {
     if (file.empty()) { return false; }
     fileName = file;
     if(!closeDatabase()){
         return false;
     }
 
+
     bool success = false;
+    std::exception_ptr err = nullptr;
     try {
         myDatabase.open(fileName.c_str());
         print("Opened database " + fileName +  " successfully\n");
@@ -59,8 +63,10 @@ bool Database::openDatabase(const string& file) {
     }
     catch (CppSQLite3Exception& e) {
         print("Can't open database: "  + e.errorMessage() + "\n");
+        err = std::current_exception();
+        success = false;
     }
-    return success;
+    return BoolReturn(success, err);
 }
 
 
@@ -68,16 +74,20 @@ bool Database::openDatabase(const string& file) {
  * @brief Close the current database
  * 
  */
-bool Database::closeDatabase(){
+BoolReturn Database::closeDatabase() {
+    bool res;
+    std::exception_ptr err = nullptr;
     try {
         myDatabase.close();
         print("Closed database successfully\n");
-        return true;
+        res = true;
     }
     catch (CppSQLite3Exception& e) {
         print("Can't close database: " + e.errorMessage() + "\n");
-        return false;
+        err = std::current_exception();
+        res = false;
     }
+    return BoolReturn(res, err);
 }
 
 
@@ -87,17 +97,20 @@ bool Database::closeDatabase(){
  * @param sqlCmd Command to execute
  * @return true if execution was successful
  */
-bool Database::executeNoReturnSQL(const string& sqlCmd){
-    string msg;
+BoolReturn Database::executeNoReturnSQL(const string& sqlCmd){
+    bool res;
+    std::exception_ptr err = nullptr;
     try {
         myDatabase.execDML(sqlCmd.c_str());
         print("Operation Successful\n");
-        return true;
+        res = true;
     }
     catch (CppSQLite3Exception& e) {
         print("Operation Unsuccessful: " + e.errorMessage() + "\n");
-        return false;
+        err = std::current_exception();
+        res = false;
     }
+    return BoolReturn(res, err);
 }
 
 
@@ -107,7 +120,7 @@ bool Database::executeNoReturnSQL(const string& sqlCmd){
  * @param sqlCmd Command to execute
  * @return true if execution was successful
  */
-bool Database::sqlExec(const std::string& sqlCmd) {
+BoolReturn Database::sqlExec(const std::string& sqlCmd) {
     return executeNoReturnSQL(sqlCmd);
 }
 
@@ -118,15 +131,18 @@ bool Database::sqlExec(const std::string& sqlCmd) {
  * @param sqlQuery Query to perform
  * @return CppSQLite3Query& 
  */
-CppSQLite3Query& Database::queryDatabase(const std::string& sqlQuery) {
+QueryReturn Database::queryDatabase(const std::string& sqlQuery) {
+    CppSQLite3Query res;
+    std::exception_ptr err = nullptr;
     try {
-        queryResult = myDatabase.execQuery(sqlQuery.c_str());
+        res = myDatabase.execQuery(sqlQuery.c_str());
         print("Operation Successful\n");
     }
     catch (CppSQLite3Exception& e) {
         print("Operation Unsuccessful: " + e.errorMessage() + "\n");
+        err = std::current_exception();
     }
-    return queryResult;
+    return QueryReturn(res, err);
 }
 
 
@@ -170,26 +186,31 @@ Database* Database::instance(){
 
 
 
-CppSQLite3Table& Database::getTable(const std::string& tableName) {
+TableReturn Database::getTable(const std::string& tableName) {
+    CppSQLite3Table tableResult;
+    std::exception_ptr err = nullptr;
     try {
         tableResult = myDatabase.getTable(("select * from " + tableName).c_str());
         print("Operation Successful\n");
     }
     catch (CppSQLite3Exception& e) {
         print("Operation Unsuccessful: " + e.errorMessage() + "\n");
+        err = std::current_exception();
     }
-    return tableResult;
+    return TableReturn(tableResult, err);
 }
 
 
 vector<string> Database::getDatabaseTables() {
     auto result = queryDatabase("SELECT name FROM sqlite_schema WHERE type = 'table' AND name NOT LIKE 'sqlite_%'; ");
     vector<string> ret;
-    while (!result.eof()) {
-        for (int i = 0; i < result.numFields(); i++) {
-            ret.push_back(result.fieldValue(i));
+    if (!result) { return ret; }
+
+    while (!result.result.eof()) {
+        for (int i = 0; i < result.result.numFields(); i++) {
+            ret.push_back(result.result.fieldValue(i));
         }
-        result.nextRow();
+        result.result.nextRow();
     }
     return ret;
 }
@@ -199,9 +220,10 @@ string Database::getTableSchema(string tableName) {
     if (!tableExists(tableName)) { return ""; }
 
     auto result = queryDatabase("SELECT sql FROM sqlite_schema WHERE name='" + tableName + "';");
+    if (!result) { return ""; }
 
-    if (!result.eof()) {
-        return result.fieldValue(0);
+    if (!result.result.eof()) {
+        return result.result.fieldValue(0);
     }
 
     return "";
