@@ -19,15 +19,15 @@ SQLManagerGUI::~SQLManagerGUI()
 void SQLManagerGUI::loadTable(QString tableName) {
     QString tableStr = "";
     auto table = Database::instance()->getTable(tableName.toStdString());
-    for (int i = 0; i < table.result.numFields(); i++) {
-        tableStr += table.result.fieldName(i);
+    for (int i = 0; i < table->numFields(); i++) {
+        tableStr += table->fieldName(i);
         tableStr += "|";
     }
     tableStr += "\n";
-    for (int i = 0; i < table.result.numRows(); i++) {
-        table.result.setRow(i);
-        for (int j = 0; j < table.result.numFields(); j++) {
-            tableStr += table.result.fieldValue(j);
+    for (int i = 0; i < table->numRows(); i++) {
+        table->setRow(i);
+        for (int j = 0; j < table->numFields(); j++) {
+            tableStr += table->fieldValue(j);
             tableStr += "|";
         }
         tableStr += "\n";

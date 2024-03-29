@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <exception>
+#include <stdexcept>
 
 #include "database.h"
 #include "CppSQLite3.h"
@@ -215,11 +216,11 @@ vector<string> Database::getDatabaseTables() {
     vector<string> ret;
     if (!query) { return ret; }
 
-    while (!query.result.eof()) {
-        for (int i = 0; i < query.result.numFields(); i++) {
-            ret.push_back(query.result.fieldValue(i));
+    while (!query->eof()) {
+        for (int i = 0; i < query->numFields(); i++) {
+            ret.push_back(query->fieldValue(i));
         }
-        query.result.nextRow();
+        query->nextRow();
     }
     return ret;
 }
@@ -228,11 +229,11 @@ vector<string> Database::getDatabaseTables() {
 string Database::getTableSchema(string tableName) {
     if (!tableExists(tableName)) { return ""; }
 
-    auto result = queryDatabase("SELECT sql FROM sqlite_schema WHERE name='" + tableName + "';");
-    if (!result) { return ""; }
+    auto query = queryDatabase("SELECT sql FROM sqlite_schema WHERE name='" + tableName + "';");
+    if (!query) { return ""; }
 
-    if (!result.result.eof()) {
-        return result.result.fieldValue(0);
+    if (!query->eof()) {
+        return query->fieldValue(0);
     }
 
     return "";
