@@ -24,7 +24,7 @@ public:
     FWDErrorReturn(const T& result, std::exception_ptr e = nullptr);
 
     T& operator*();
-    T* operator->() requires (std::is_class_v<T>);
+    T* operator->() requires (std::is_class_v<T> || std::is_union_v<T>);
 public:
     T result;
 };
@@ -40,7 +40,7 @@ inline FWDErrorReturn<T>::FWDErrorReturn(const T& result, std::exception_ptr e) 
 }
 
 template<typename T>
-inline T* FWDErrorReturn<T>::operator->() requires (std::is_class_v<T>) {
+inline T* FWDErrorReturn<T>::operator->() requires (std::is_class_v<T> || std::is_union_v<T>) {
     return &result;
 }
 
