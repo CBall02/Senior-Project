@@ -47,7 +47,7 @@ Database::~Database(){
  * 
  * @param file database to open
  */
-BoolReturn Database::openDatabase(const string& file) {
+FWDErrorReturn<bool> Database::openDatabase(const string& file) {
     if (file.empty()) { return false; }
     fileName = file;
     if(!closeDatabase()){
@@ -67,7 +67,7 @@ BoolReturn Database::openDatabase(const string& file) {
         err = rethrow(e);
         success = false;
     }
-    return BoolReturn(success, err);
+    return FWDErrorReturn(success, err);
 }
 
 
@@ -75,7 +75,7 @@ BoolReturn Database::openDatabase(const string& file) {
  * @brief Close the current database
  * 
  */
-BoolReturn Database::closeDatabase() {
+FWDErrorReturn<bool> Database::closeDatabase() {
     bool res;
     std::exception_ptr err = nullptr;
     try {
@@ -88,7 +88,7 @@ BoolReturn Database::closeDatabase() {
         err = rethrow(e);
         res = false;
     }
-    return BoolReturn(res, err);
+    return FWDErrorReturn(res, err);
 }
 
 
@@ -98,7 +98,7 @@ BoolReturn Database::closeDatabase() {
  * @param sqlCmd Command to execute
  * @return true if execution was successful
  */
-BoolReturn Database::executeNoReturnSQL(const string& sqlCmd){
+FWDErrorReturn<bool> Database::executeNoReturnSQL(const string& sqlCmd){
     bool res;
     std::exception_ptr err = nullptr;
     try {
@@ -111,7 +111,7 @@ BoolReturn Database::executeNoReturnSQL(const string& sqlCmd){
         err = rethrow(e);
         res = false;
     }
-    return BoolReturn(res, err);
+    return FWDErrorReturn(res, err);
 }
 
 
@@ -121,7 +121,7 @@ BoolReturn Database::executeNoReturnSQL(const string& sqlCmd){
  * @param sqlCmd Command to execute
  * @return true if execution was successful
  */
-BoolReturn Database::sqlExec(const std::string& sqlCmd) {
+FWDErrorReturn<bool> Database::sqlExec(const std::string& sqlCmd) {
     return executeNoReturnSQL(sqlCmd);
 }
 
@@ -132,7 +132,7 @@ BoolReturn Database::sqlExec(const std::string& sqlCmd) {
  * @param sqlQuery Query to perform
  * @return CppSQLite3Query& 
  */
-QueryReturn Database::queryDatabase(const std::string& sqlQuery) {
+FWDErrorReturn<CppSQLite3Query> Database::queryDatabase(const std::string& sqlQuery) {
     CppSQLite3Query res;
     std::exception_ptr err = nullptr;
     try {
@@ -143,7 +143,7 @@ QueryReturn Database::queryDatabase(const std::string& sqlQuery) {
         print("Operation Unsuccessful: " + e.errorMessage() + "\n");
         err = rethrow(e);
     }
-    return QueryReturn(res, err);
+    return FWDErrorReturn(res, err);
 }
 
 
@@ -196,7 +196,7 @@ Database* Database::instance(){
 
 
 
-TableReturn Database::getTable(const std::string& tableName) {
+FWDErrorReturn<CppSQLite3Table> Database::getTable(const std::string& tableName) {
     CppSQLite3Table tableResult;
     std::exception_ptr err = nullptr;
     try {
@@ -207,7 +207,7 @@ TableReturn Database::getTable(const std::string& tableName) {
         print("Operation Unsuccessful: " + e.errorMessage() + "\n");
         err = rethrow(e);
     }
-    return TableReturn(tableResult, err);
+    return FWDErrorReturn(tableResult, err);
 }
 
 

@@ -3,11 +3,12 @@
 #include "CppSQLite3.h"
 #include <exception>
 #include <string>
+#include <type_traits>
 
-class DatabaseReturn :
-    public safe_bool <DatabaseReturn> {
+class ExceptionReturnBase :
+    public safe_bool <ExceptionReturnBase> {
 public:
-    DatabaseReturn(std::exception_ptr e = nullptr);
+    ExceptionReturnBase(const std::exception_ptr& e = nullptr);
     
     bool boolean_test() const;
     std::string what();
@@ -16,32 +17,34 @@ protected:
 };
 
 
-class QueryReturn : public DatabaseReturn {
+template <typename T>
+class FWDErrorReturn : public ExceptionReturnBase {
 public:
-    QueryReturn(CppSQLite3Query& result, std::exception_ptr e = nullptr);
-    CppSQLite3Query* operator->();
-    CppSQLite3Query& operator*();
+    FWDErrorReturn(T& result, std::exception_ptr e = nullptr);
+    FWDErrorReturn(const T& result, std::exception_ptr e = nullptr);
+
+    T& operator*();
+    T* operator->() requires (std::is_class_v<T>);
 public:
-    CppSQLite3Query result;
+    T result;
 };
 
+template<typename T>
+inline FWDErrorReturn<T>::FWDErrorReturn(T& result, std::exception_ptr e) : ExceptionReturnBase(e) {
+    this->result = result;
+}
 
-class TableReturn : public DatabaseReturn {
-public:
-    TableReturn(CppSQLite3Table& result, std::exception_ptr e = nullptr);
-    CppSQLite3Table* operator->();
-    CppSQLite3Table& operator*();
-public:
-    CppSQLite3Table result;
-};
+template<typename T>
+inline FWDErrorReturn<T>::FWDErrorReturn(const T& result, std::exception_ptr e) : ExceptionReturnBase(e) {
+    this->result = result;
+}
 
+template<typename T>
+inline T* FWDErrorReturn<T>::operator->() requires (std::is_class_v<T>) {
+    return &result;
+}
 
-
-class BoolReturn : public DatabaseReturn {
-public:
-    BoolReturn(const bool& result, std::exception_ptr e = nullptr);
-    bool boolean_test() const;
-    bool& operator*();
-public:
-    bool result;
-};
+template<typename T>
+inline T& FWDErrorReturn<T>::operator*() {
+    return result;
+}

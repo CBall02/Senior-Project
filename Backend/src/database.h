@@ -11,13 +11,13 @@ class Database {
 public:
 
     ~Database();
-    BoolReturn openDatabase(const std::string& file = ":memory:");
-    BoolReturn closeDatabase();
-    BoolReturn sqlExec(const std::string& sqlCmd);
-    QueryReturn queryDatabase(const std::string& sqlQuery);
+    FWDErrorReturn<bool> openDatabase(const std::string& file = ":memory:");
+    FWDErrorReturn<bool> closeDatabase();
+    FWDErrorReturn<bool> sqlExec(const std::string& sqlCmd);
+    FWDErrorReturn<CppSQLite3Query> queryDatabase(const std::string& sqlQuery);
     //CppSQLite3Query& getMostRecentQuery();
     bool tableExists(const std::string& tableName);
-    TableReturn getTable(const std::string& tableName);
+    FWDErrorReturn<CppSQLite3Table> getTable(const std::string& tableName);
     std::vector<std::string> getDatabaseTables();
     std::string getTableSchema(std::string tableName);
 
@@ -28,7 +28,7 @@ public:
 
 private:
     Database(const std::string& file = ":memory:");
-    BoolReturn executeNoReturnSQL(const std::string& sqlCmd);
+    FWDErrorReturn<bool> executeNoReturnSQL(const std::string& sqlCmd);
     static inline void print(const std::string& statement);
     inline std::exception_ptr rethrow(CppSQLite3Exception& e);
 
