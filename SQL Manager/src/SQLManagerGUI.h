@@ -17,14 +17,15 @@ private:
     QString databaseFilepath;
 
     void loadTable(QString tableName);
-    void loadTablesComboBox();
-    void addToTablesComboBox();
     void loadTablesListView();
 
 private slots:
     void on_createButton_clicked();
     void on_insertButton_clicked();
     void on_actionOpen_triggered();
-    void on_loadTableButton_clicked();
+    void loadTableToMain();
     void on_tableCreated();
+    void dropTable(QString tableName);
+    void on_commandPromptInputLineEdit_returnPressed();
+    void popupTablesContextMenu(QPoint pos);
 };
