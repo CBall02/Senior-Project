@@ -27,6 +27,11 @@ void CreatePage::on_minusButton_clicked()
 		tableNames.pop_back();
 		delete tableTypes.back();
 		tableTypes.pop_back();
+		for (int i = 0; i < 3; i++)
+		{
+			delete tableConstraints.back();
+			tableConstraints.pop_back();
+		}
 		delete ui.verticalLayout->takeAt(ui.verticalLayout->count() - 2);
 		numAttributes--;
 	}
@@ -88,16 +93,49 @@ void CreatePage::addAttribute()
 	QHBoxLayout* newLine = new QHBoxLayout();
 	QLineEdit* name = new QLineEdit();
 	QComboBox* type = new QComboBox();
+	QCheckBox* primaryKey = new QCheckBox();
+	QCheckBox* unique = new QCheckBox();
+	QCheckBox* notNull = new QCheckBox();
 	type->addItem("Type");
 	type->addItem("int");
 	type->addItem("varchar");
 	type->addItem("boolean");
 	type->addItem("datetime");
 	type->addItem("float");
+	primaryKey->setText("Primary Key");
+	unique->setText("Unique");
+	notNull->setText("Not Null");
 	newLine->addWidget(name);
 	newLine->addWidget(type);
+	newLine->addWidget(primaryKey);
+	newLine->addWidget(unique);
+	newLine->addWidget(notNull);
+	connect(primaryKey, SIGNAL(stateChanged()),this, SLOT(on_primaryKey_clicked()));
+	connect(unique, SIGNAL(stateChanged()), this, SLOT(on_unique_or_notNull_clicked()));
+	connect(notNull, SIGNAL(stateChanged()), this, SLOT(on_unique_or_notNull_clicked()));
 	tableNames.push_back(name);
 	tableTypes.push_back(type);
+	tableConstraints.push_back(primaryKey);
+	tableConstraints.push_back(unique);
+	tableConstraints.push_back(notNull);
 	ui.verticalLayout->insertLayout(ui.verticalLayout->count() - 1, newLine);
 	numAttributes++;
+}
+
+void CreatePage::on_primaryKey_clicked()
+{
+	QCheckBox* primaryKey = qobject_cast<QCheckBox*>(sender());
+	delete primaryKey;
+	for (int i = 0; i < numAttributes; i++)
+	{
+		if (primaryKey != tableConstraints.at(3 * i))
+		{
+			tableConstraints.at(3 * i)->setCheckState(Qt::Unchecked);
+		}
+	}
+}
+
+void CreatePage::on_unique_or_notNull_clicked()
+{
+
 }
