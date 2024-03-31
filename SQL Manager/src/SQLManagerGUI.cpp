@@ -41,9 +41,9 @@ void SQLManagerGUI::loadTable(QString tableName) {
         labels << table->fieldName(i);
     }
 
-    ui.tableWidget->setHorizontalHeaderLabels(labels);
     ui.tableWidget->setColumnCount(table->numFields());
     ui.tableWidget->setRowCount(table->numRows());
+    ui.tableWidget->setHorizontalHeaderLabels(labels);
 
     for (int i = 0; i < table->numRows(); i++) {
         table->setRow(i);
