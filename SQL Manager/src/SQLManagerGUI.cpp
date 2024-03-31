@@ -21,8 +21,8 @@ SQLManagerGUI::SQLManagerGUI(QWidget *parent)
     ui.setupUi(this);
 
     ui.commandPromptOutputTextEdit->setReadOnly(true);
-    ui.splitter->setSizes(QList<int>() << 50 << 250);
-    ui.splitter_2->setSizes(QList<int>() << 250 << 50);
+    ui.splitter->setSizes(QList<int>() << 100 << 500);
+    ui.splitter_2->setSizes(QList<int>() << 300 << 100);
     ui.tablesListView->setContextMenuPolicy(Qt::CustomContextMenu);
 
     connect(ui.tablesListView, &QListView::customContextMenuRequested, this, &SQLManagerGUI::popupTablesContextMenu);
@@ -34,24 +34,24 @@ SQLManagerGUI::~SQLManagerGUI()
 
 //Functions
 void SQLManagerGUI::loadTable(QString tableName) {
-    QString tableStr = "";
     auto table = Database::instance()->getTable(tableName.toStdString());
+    
+    QStringList labels;
     for (int i = 0; i < table->numFields(); i++) {
-        tableStr += table->fieldName(i);
-        tableStr += "|";
+        labels << table->fieldName(i);
     }
-    tableStr += "\n";
+
+    ui.tableWidget->setHorizontalHeaderLabels(labels);
+    ui.tableWidget->setColumnCount(table->numFields());
+    ui.tableWidget->setRowCount(table->numRows());
+
     for (int i = 0; i < table->numRows(); i++) {
         table->setRow(i);
         for (int j = 0; j < table->numFields(); j++) {
-            tableStr += table->fieldValue(j);
-            tableStr += "|";
+            ui.tableWidget->setItem(i, j, new QTableWidgetItem(QString::fromStdString(table->fieldValue(j))));
         }
-        tableStr += "\n";
     }
-    QMessageBox msgBox;
-    msgBox.setText(tableStr);
-    msgBox.exec();
+
 }
 
 void SQLManagerGUI::loadTablesListView() {
