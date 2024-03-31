@@ -3,6 +3,7 @@
 #include "database.h"
 #include "CreatePage.h"
 #include "InsertPage.h"
+#include "SelectPage.h"
 #include <sqlGenerator.h>
 
 #include <QFileDialog>
@@ -74,6 +75,11 @@ void SQLManagerGUI::on_insertButton_clicked() {
     InsertPage insertPg;
     insertPg.setModal(true);
     insertPg.exec();
+}
+
+void SQLManagerGUI::on_selectButton_clicked() {
+    SelectPage* selectPg = new SelectPage();
+    selectPg->show();
 }
 
 void SQLManagerGUI::on_actionOpen_triggered() {
