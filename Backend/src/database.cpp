@@ -3,6 +3,9 @@
 #include <vector>
 #include <exception>
 #include <stdexcept>
+#include <algorithm>
+#include <regex>
+#include <sstream>
 
 #include "database.h"
 #include "CppSQLite3.h"
@@ -222,19 +225,72 @@ vector<string> Database::getDatabaseTables() {
         }
         query->nextRow();
     }
+    ret.push_back("sqlite_schema");
     return ret;
 }
 
 
-string Database::getTableSchema(string tableName) {
-    if (!tableExists(tableName)) { return ""; }
+vector<Database::Column> Database::getTableSchema(string tableName) {
+    if (!tableExists(tableName)) { return {}; }
 
     auto query = queryDatabase("SELECT sql FROM sqlite_schema WHERE name='" + tableName + "';");
-    if (!query) { return ""; }
+    if (!query) { return {}; }
 
     if (!query->eof()) {
-        return query->fieldValue(0);
+        vector<std::pair<string, string>> columns;
+        string schema = query->fieldValue(0);
+        std::transform(schema.begin(), schema.end(), schema.begin(), ::tolower);
+
+        return parseSchema(schema);
     }
 
-    return "";
+    return {};
+}
+
+
+vector<Database::Column> Database::parseSchema(string& schema) {
+    vector<Column> ret;
+    schema.erase(std::remove(schema.begin(), schema.end(), '\n'), schema.cend());
+    schema.erase(std::remove(schema.begin(), schema.end(), '\t'), schema.cend());
+    schema = std::regex_replace(schema, std::regex("^ +| +$|( ) +"), "$1");
+    std::stringstream ss;
+    ss << schema;
+    string line;
+    std::getline(ss, line, '(');
+    std::getline(ss, line);
+    if (!line.empty() && line[0] == ' ') {
+        line = line.substr(1, line.size() - 1);
+    }
+    line.pop_back();
+
+    vector<string> columns;
+    ss.clear();
+    ss << line;
+    while (std::getline(ss, line, ',')) {
+        columns.push_back(line);
+    }
+
+    for (auto& column : columns) {
+        ss.clear();
+        ss << column;
+        Column c;
+        ss >> c.name >> c.type;
+        std::getline(ss, column);
+
+        if (column.find("primary key") != string::npos) {
+            c.isNotNull = c.isUnique = c.isPrimary = true;
+        }
+
+        if (column.find("not null") != string::npos) {
+            c.isNotNull = true;
+        }
+
+        if (column.find("unique") != string::npos) {
+            c.isUnique = true;
+        }
+
+        ret.push_back(c);
+    }
+
+    return ret;
 }
