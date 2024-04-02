@@ -3,6 +3,9 @@
 #include <vector>
 #include <exception>
 #include <stdexcept>
+#include <algorithm>
+#include <regex>
+#include <sstream>
 
 #include "database.h"
 #include "CppSQLite3.h"
@@ -65,7 +68,10 @@ FWDErrorReturn<bool> Database::openDatabase(const string& file) {
     catch (CppSQLite3Exception& e) {
         print("Can't open database: "  + e.errorMessage() + "\n");
         err = rethrow(e);
-        success = false;
+    }
+    catch (std::exception& e) {
+        print("Can't open database: " + std::string(e.what()) + "\n");
+        err = std::current_exception();
     }
     return FWDErrorReturn(success, err);
 }
@@ -76,7 +82,7 @@ FWDErrorReturn<bool> Database::openDatabase(const string& file) {
  * 
  */
 FWDErrorReturn<bool> Database::closeDatabase() {
-    bool res;
+    bool res = false;
     std::exception_ptr err = nullptr;
     try {
         myDatabase.close();
@@ -86,7 +92,10 @@ FWDErrorReturn<bool> Database::closeDatabase() {
     catch (CppSQLite3Exception& e) {
         print("Can't close database: " + e.errorMessage() + "\n");
         err = rethrow(e);
-        res = false;
+    }
+    catch (std::exception& e) {
+        print("Can't close database: " + std::string(e.what()) + "\n");
+        err = std::current_exception();
     }
     return FWDErrorReturn(res, err);
 }
@@ -99,7 +108,7 @@ FWDErrorReturn<bool> Database::closeDatabase() {
  * @return true if execution was successful
  */
 FWDErrorReturn<bool> Database::executeNoReturnSQL(const string& sqlCmd){
-    bool res;
+    bool res = false;
     std::exception_ptr err = nullptr;
     try {
         myDatabase.execDML(sqlCmd.c_str());
@@ -109,7 +118,10 @@ FWDErrorReturn<bool> Database::executeNoReturnSQL(const string& sqlCmd){
     catch (CppSQLite3Exception& e) {
         print("Operation Unsuccessful: " + e.errorMessage() + "\n");
         err = rethrow(e);
-        res = false;
+    }
+    catch (std::exception& e) {
+        print("Operation Unsuccessful: " + std::string(e.what()) + "\n");
+        err = std::current_exception();
     }
     return FWDErrorReturn(res, err);
 }
@@ -143,6 +155,11 @@ FWDErrorReturn<CppSQLite3Query> Database::queryDatabase(const std::string& sqlQu
         print("Operation Unsuccessful: " + e.errorMessage() + "\n");
         err = rethrow(e);
     }
+    catch (std::exception& e) {
+        print("Operation Unsuccessful: " + std::string(e.what()) + "\n");
+        err = std::current_exception();
+    }
+
     return FWDErrorReturn(res, err);
 }
 
@@ -207,6 +224,10 @@ FWDErrorReturn<CppSQLite3Table> Database::getTable(const std::string& tableName)
         print("Operation Unsuccessful: " + e.errorMessage() + "\n");
         err = rethrow(e);
     }
+    catch (std::exception& e) {
+        print("Operation Unsuccessful: " + std::string(e.what()) + "\n");
+        err = std::current_exception();
+    }
     return FWDErrorReturn(tableResult, err);
 }
 
@@ -226,15 +247,67 @@ vector<string> Database::getDatabaseTables() {
 }
 
 
-string Database::getTableSchema(string tableName) {
-    if (!tableExists(tableName)) { return ""; }
+vector<Database::Column> Database::getTableSchema(string tableName) {
+    if (!tableExists(tableName)) { return {}; }
 
     auto query = queryDatabase("SELECT sql FROM sqlite_schema WHERE name='" + tableName + "';");
-    if (!query) { return ""; }
+    if (!query) { return {}; }
 
     if (!query->eof()) {
-        return query->fieldValue(0);
+        vector<std::pair<string, string>> columns;
+        string schema = query->fieldValue(0);
+        std::transform(schema.begin(), schema.end(), schema.begin(), ::tolower);
+
+        return parseSchema(schema);
     }
 
-    return "";
+    return {};
+}
+
+
+vector<Database::Column> Database::parseSchema(string& schema) {
+    vector<Column> ret;
+    schema.erase(std::remove(schema.begin(), schema.end(), '\n'), schema.cend());
+    schema.erase(std::remove(schema.begin(), schema.end(), '\t'), schema.cend());
+    schema = std::regex_replace(schema, std::regex("^ +| +$|( ) +"), "$1");
+    std::stringstream ss;
+    ss << schema;
+    string line;
+    std::getline(ss, line, '(');
+    std::getline(ss, line);
+    if (!line.empty() && line[0] == ' ') {
+        line = line.substr(1, line.size() - 1);
+    }
+    line.pop_back();
+
+    vector<string> columns;
+    ss.clear();
+    ss << line;
+    while (std::getline(ss, line, ',')) {
+        columns.push_back(line);
+    }
+
+    for (auto& column : columns) {
+        ss.clear();
+        ss << column;
+        Column c;
+        ss >> c.name >> c.type;
+        std::getline(ss, column);
+
+        if (column.find("primary key") != string::npos) {
+            c.isNotNull = c.isUnique = c.isPrimary = true;
+        }
+
+        if (column.find("not null") != string::npos) {
+            c.isNotNull = true;
+        }
+
+        if (column.find("unique") != string::npos) {
+            c.isUnique = true;
+        }
+
+        ret.push_back(c);
+    }
+
+    return ret;
 }

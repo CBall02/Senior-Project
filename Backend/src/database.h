@@ -8,6 +8,16 @@
 
 
 class Database {
+    struct Column {
+        std::string name;
+        std::string type;
+        bool isNotNull = false;
+        bool isUnique = false;
+        bool isPrimary = false;
+
+        bool isForignKey = false;
+    };
+
 public:
 
     ~Database();
@@ -19,7 +29,7 @@ public:
     bool tableExists(const std::string& tableName);
     FWDErrorReturn<CppSQLite3Table> getTable(const std::string& tableName);
     std::vector<std::string> getDatabaseTables();
-    std::string getTableSchema(std::string tableName);
+    std::vector<Column> getTableSchema(std::string tableName);
 
     friend std::ostream& operator<<(std::ostream& os, const Database& db){
         return os;
@@ -31,6 +41,7 @@ private:
     FWDErrorReturn<bool> executeNoReturnSQL(const std::string& sqlCmd);
     static inline void print(const std::string& statement);
     inline std::exception_ptr rethrow(CppSQLite3Exception& e);
+    std::vector<Column> parseSchema(std::string& schema);
 
 private:
     CppSQLite3DB myDatabase;
