@@ -1,32 +1,37 @@
 #include "SelectPage.h"
 
 
-SelectPage::SelectPage(QWidget *parent)
-	: QDialog(parent)
+SelectPage::SelectPage(QWidget* parent)
+    : QDialog(parent)
 {
-	ui.setupUi(this);
+    ui.setupUi(this);
     loadTablesComboBox();
 }
 
 SelectPage::~SelectPage()
 {}
 
-void SelectPage::loadTablesComboBox() 
+void SelectPage::loadTablesComboBox()
 {
     ui.tablesComboBox->clear();
     std::vector<std::string> tables = Database::instance()->getDatabaseTables();
-    for (std::string name : tables) 
+    for (std::string name : tables)
     {
         ui.tablesComboBox->addItem(QString::fromStdString(name));
     }
 }
 
-void SelectPage::on_loadTablesComboBox_currentIndexChanged(int index)
+void SelectPage::on_tablesComboBox_currentIndexChanged(int index)
 {
     std::vector<std::string> tables = Database::instance()->getDatabaseTables();
-    auto table = Database::instance()->getTable(tables.at(index));
-    for (int i = 0; i < table.numFields(); i++)
+    std::vector<Database::Column> columns = Database::instance()->getTableSchema(tables.at(index));
+    for (Database::Column column : columns)
     {
-
+        QHBoxLayout* newLine = new QHBoxLayout();
+        QCheckBox* attribute = new QCheckBox();
+        attribute->setText(QString::fromStdString(column.name));
+        selections.push_back(attribute);
+        newLine->addWidget(attribute);
+        ui.verticalLayout->insertLayout(ui.verticalLayout->count() - 1, newLine);
     }
 }
