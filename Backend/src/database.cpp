@@ -68,7 +68,10 @@ FWDErrorReturn<bool> Database::openDatabase(const string& file) {
     catch (CppSQLite3Exception& e) {
         print("Can't open database: "  + e.errorMessage() + "\n");
         err = rethrow(e);
-        success = false;
+    }
+    catch (std::exception& e) {
+        print("Can't open database: " + std::string(e.what()) + "\n");
+        err = std::current_exception();
     }
     return FWDErrorReturn(success, err);
 }
@@ -79,7 +82,7 @@ FWDErrorReturn<bool> Database::openDatabase(const string& file) {
  * 
  */
 FWDErrorReturn<bool> Database::closeDatabase() {
-    bool res;
+    bool res = false;
     std::exception_ptr err = nullptr;
     try {
         myDatabase.close();
@@ -89,7 +92,10 @@ FWDErrorReturn<bool> Database::closeDatabase() {
     catch (CppSQLite3Exception& e) {
         print("Can't close database: " + e.errorMessage() + "\n");
         err = rethrow(e);
-        res = false;
+    }
+    catch (std::exception& e) {
+        print("Can't close database: " + std::string(e.what()) + "\n");
+        err = std::current_exception();
     }
     return FWDErrorReturn(res, err);
 }
@@ -102,7 +108,7 @@ FWDErrorReturn<bool> Database::closeDatabase() {
  * @return true if execution was successful
  */
 FWDErrorReturn<bool> Database::executeNoReturnSQL(const string& sqlCmd){
-    bool res;
+    bool res = false;
     std::exception_ptr err = nullptr;
     try {
         myDatabase.execDML(sqlCmd.c_str());
@@ -112,7 +118,10 @@ FWDErrorReturn<bool> Database::executeNoReturnSQL(const string& sqlCmd){
     catch (CppSQLite3Exception& e) {
         print("Operation Unsuccessful: " + e.errorMessage() + "\n");
         err = rethrow(e);
-        res = false;
+    }
+    catch (std::exception& e) {
+        print("Operation Unsuccessful: " + std::string(e.what()) + "\n");
+        err = std::current_exception();
     }
     return FWDErrorReturn(res, err);
 }
@@ -146,6 +155,11 @@ FWDErrorReturn<CppSQLite3Query> Database::queryDatabase(const std::string& sqlQu
         print("Operation Unsuccessful: " + e.errorMessage() + "\n");
         err = rethrow(e);
     }
+    catch (std::exception& e) {
+        print("Operation Unsuccessful: " + std::string(e.what()) + "\n");
+        err = std::current_exception();
+    }
+
     return FWDErrorReturn(res, err);
 }
 
@@ -209,6 +223,10 @@ FWDErrorReturn<CppSQLite3Table> Database::getTable(const std::string& tableName)
     catch (CppSQLite3Exception& e) {
         print("Operation Unsuccessful: " + e.errorMessage() + "\n");
         err = rethrow(e);
+    }
+    catch (std::exception& e) {
+        print("Operation Unsuccessful: " + std::string(e.what()) + "\n");
+        err = std::current_exception();
     }
     return FWDErrorReturn(tableResult, err);
 }
