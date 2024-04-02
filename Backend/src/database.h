@@ -8,6 +8,9 @@
 
 
 class Database {
+
+public:
+
     struct Column {
         std::string name;
         std::string type;
@@ -17,8 +20,6 @@ class Database {
 
         bool isForignKey = false;
     };
-
-public:
 
     ~Database();
     FWDErrorReturn<bool> openDatabase(const std::string& file = ":memory:");
