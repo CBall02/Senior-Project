@@ -243,7 +243,6 @@ vector<string> Database::getDatabaseTables() {
         }
         query->nextRow();
     }
-    ret.push_back("sqlite_schema");
     return ret;
 }
 
