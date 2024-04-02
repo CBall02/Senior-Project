@@ -23,7 +23,7 @@ void SelectPage::loadTablesComboBox()
 
 void SelectPage::on_tablesComboBox_currentIndexChanged(int index)
 {
-    for (int i = 0; i < selections.size(); i++)
+    while (selections.size() > 0)
     {
         delete selections.back();
         selections.pop_back();
