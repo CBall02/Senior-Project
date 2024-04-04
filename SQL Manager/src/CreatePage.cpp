@@ -125,7 +125,7 @@ void CreatePage::addAttribute()
 void CreatePage::on_primaryKey_clicked()
 {
 	QCheckBox* primaryKey = qobject_cast<QCheckBox*>(sender());
-	delete primaryKey;
+	//delete primaryKey;
 	for (int i = 0; i < numAttributes; i++)
 	{
 		if (primaryKey != tableConstraints.at(3 * i))
