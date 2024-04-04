@@ -4,12 +4,10 @@
 #include "InsertPage.h"
 #include "SelectPage.h"
 
-
 #include "database.h"
 #include "sqlGenerator.h"
 #include "databaseReturn.h"
 #include "CppSQLite3.h"
-
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -46,7 +44,7 @@ void SQLManagerGUI::loadTable(QString tableName) {
     for (int i = 0; i < table->numFields(); i++) {
         labels << table->fieldName(i);
     }
-
+    ui.tableWidget->setRowCount(0);
     ui.tableWidget->setColumnCount(table->numFields());
     ui.tableWidget->setRowCount(table->numRows());
     ui.tableWidget->setHorizontalHeaderLabels(labels);
@@ -57,8 +55,8 @@ void SQLManagerGUI::loadTable(QString tableName) {
             ui.tableWidget->setItem(i, j, new QTableWidgetItem(QString::fromStdString(table->fieldValue(j))));
         }
     }
-
 }
+
 void SQLManagerGUI::loadQueryOutput(FWDErrorReturn<CppSQLite3Query> table) {
     QStringList labels;
     for (int i = 0; i < table->numFields(); i++) {
@@ -70,7 +68,7 @@ void SQLManagerGUI::loadQueryOutput(FWDErrorReturn<CppSQLite3Query> table) {
 
     int i = 0;
     while (!table->eof()) {
-        
+
         for (int j = 0; j < table->numFields(); j++) {
             ui.tableWidget->setItem(i, j, new QTableWidgetItem(QString::fromStdString(table->fieldValue(j))));
         }
