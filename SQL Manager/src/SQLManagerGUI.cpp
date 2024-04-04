@@ -46,7 +46,7 @@ void SQLManagerGUI::loadTable(QString tableName) {
     for (int i = 0; i < table->numFields(); i++) {
         labels << table->fieldName(i);
     }
-
+    ui.tableWidget->setRowCount(0);
     ui.tableWidget->setColumnCount(table->numFields());
     ui.tableWidget->setRowCount(table->numRows());
     ui.tableWidget->setHorizontalHeaderLabels(labels);
@@ -60,26 +60,25 @@ void SQLManagerGUI::loadTable(QString tableName) {
 
 }
 void SQLManagerGUI::loadQueryOutput(FWDErrorReturn<CppSQLite3Query> table) {
+    ui.tableWidget->setRowCount(0);
     //auto table = Database::instance()->resul;
     QStringList labels;
     for (int i = 0; i < table->numFields(); i++) {
         labels << table->fieldName(i);
     }
 
-    ui.tableWidget->setHorizontalHeaderLabels(labels);
-    ui.tableWidget->setColumnCount(table->numFields());
-    //ui.tableWidget->setRowCount(table->numRows());
 
-    int i = 0;
+    ui.tableWidget->setColumnCount(table->numFields());
+    ui.tableWidget->setHorizontalHeaderLabels(labels);
+
     while (!table->eof()) {
-        
+        ui.tableWidget->insertRow(ui.tableWidget->rowCount());
+
         for (int j = 0; j < table->numFields(); j++) {
-            ui.tableWidget->setItem(i, j, new QTableWidgetItem(QString::fromStdString(table->fieldValue(j))));
+            ui.tableWidget->setItem(ui.tableWidget->rowCount() - 1, j, new QTableWidgetItem(QString::fromStdString(table->fieldValue(j))));
         }
         table->nextRow();
-        i++;
     }
-
 }
 
 void SQLManagerGUI::loadTablesListView() {
