@@ -3,6 +3,7 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_SQLManagerGUI.h"
 #include "database.h"
+#include "databaseReturn.h"
 
 class SQLManagerGUI : public QMainWindow
 {
@@ -17,6 +18,7 @@ private:
     QString databaseFilepath;
 
     void loadTable(QString tableName);
+    void loadQueryOutput(FWDErrorReturn<CppSQLite3Query> table);
     void loadTablesListView();
 
 private slots:
