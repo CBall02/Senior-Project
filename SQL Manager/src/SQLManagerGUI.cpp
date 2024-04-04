@@ -4,12 +4,10 @@
 #include "InsertPage.h"
 #include "SelectPage.h"
 
-
 #include "database.h"
 #include "sqlGenerator.h"
 #include "databaseReturn.h"
 #include "CppSQLite3.h"
-
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -57,27 +55,25 @@ void SQLManagerGUI::loadTable(QString tableName) {
             ui.tableWidget->setItem(i, j, new QTableWidgetItem(QString::fromStdString(table->fieldValue(j))));
         }
     }
-
 }
+
 void SQLManagerGUI::loadQueryOutput(FWDErrorReturn<CppSQLite3Query> table) {
-    ui.tableWidget->setRowCount(0);
-    //auto table = Database::instance()->resul;
     QStringList labels;
     for (int i = 0; i < table->numFields(); i++) {
         labels << table->fieldName(i);
     }
 
-
-    ui.tableWidget->setColumnCount(table->numFields());
     ui.tableWidget->setHorizontalHeaderLabels(labels);
+    ui.tableWidget->setColumnCount(table->numFields());
 
+    int i = 0;
     while (!table->eof()) {
-        ui.tableWidget->insertRow(ui.tableWidget->rowCount());
 
         for (int j = 0; j < table->numFields(); j++) {
-            ui.tableWidget->setItem(ui.tableWidget->rowCount() - 1, j, new QTableWidgetItem(QString::fromStdString(table->fieldValue(j))));
+            ui.tableWidget->setItem(i, j, new QTableWidgetItem(QString::fromStdString(table->fieldValue(j))));
         }
         table->nextRow();
+        i++;
     }
 }
 
@@ -112,13 +108,8 @@ void SQLManagerGUI::on_selectButton_clicked() {
 void SQLManagerGUI::on_actionOpen_triggered() {
     QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open File"), "C:/", tr("Database Files (*.db)"));
     databaseFilepath = fileNames.join("");
-  
-    QMessageBox msgBox;
-    msgBox.setText(databaseFilepath);
-    msgBox.exec();
 
     bool opened = Database::instance()->openDatabase(databaseFilepath.toStdString());
-
     if (opened) {
         loadTablesListView();
     }
@@ -132,7 +123,6 @@ void SQLManagerGUI::on_actionOpen_triggered() {
 void SQLManagerGUI::loadTableToMain() {
     QModelIndex index = ui.tablesListView->currentIndex();
     QString itemText = index.data(Qt::DisplayRole).toString();
-
     loadTable(itemText);
 }
 void SQLManagerGUI::on_tableCreated() {
@@ -157,7 +147,6 @@ void SQLManagerGUI::dropTable(QString tableName) {
     {
         qDebug() << "Successful Drop";
     }
-
 }
 
 void SQLManagerGUI::on_commandPromptInputLineEdit_returnPressed() {
@@ -172,7 +161,6 @@ void SQLManagerGUI::on_commandPromptInputLineEdit_returnPressed() {
     QTextStream s(&input);
     QString firstWord;
     s >> firstWord;
-
 
     if (firstWord.toUpper() == "SELECT") {
         auto table = Database::instance()->queryDatabase(input.toStdString());
