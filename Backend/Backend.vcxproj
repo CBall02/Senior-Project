@@ -21,11 +21,14 @@
   <ItemGroup>
     <ClCompile Include="src\CppSQLite3.cpp" />
     <ClCompile Include="src\database.cpp" />
+    <ClCompile Include="src\databaseReturn.cpp" />
     <ClCompile Include="src\sqlite3.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\boolReturnStructure.h" />
     <ClInclude Include="src\CppSQLite3.h" />
     <ClInclude Include="src\database.h" />
+    <ClInclude Include="src\databaseReturn.h" />
     <ClInclude Include="src\sqlGenerator.h" />
     <ClInclude Include="src\sqlite3.h" />
   </ItemGroup>

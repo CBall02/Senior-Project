@@ -10,14 +10,23 @@ class SQLManagerGUI : public QMainWindow
 
 public:
     SQLManagerGUI(QWidget *parent = nullptr);
-    ~SQLManagerGUI();
+    ~SQLManagerGUI();  
 
 private:
     Ui::SQLManagerGUIClass ui;
     QString databaseFilepath;
 
+    void loadTable(QString tableName);
+    void loadTablesListView();
+
 private slots:
     void on_createButton_clicked();
     void on_insertButton_clicked();
+    void on_selectButton_clicked();
     void on_actionOpen_triggered();
+    void loadTableToMain();
+    void on_tableCreated();
+    void dropTable(QString tableName);
+    void on_commandPromptInputLineEdit_returnPressed();
+    void popupTablesContextMenu(QPoint pos);
 };
