@@ -60,7 +60,6 @@ void SQLManagerGUI::loadTable(QString tableName) {
 
 }
 void SQLManagerGUI::loadQueryOutput(FWDErrorReturn<CppSQLite3Query> table) {
-    //auto table = Database::instance()->resul;
     QStringList labels;
     for (int i = 0; i < table->numFields(); i++) {
         labels << table->fieldName(i);
@@ -68,7 +67,6 @@ void SQLManagerGUI::loadQueryOutput(FWDErrorReturn<CppSQLite3Query> table) {
 
     ui.tableWidget->setHorizontalHeaderLabels(labels);
     ui.tableWidget->setColumnCount(table->numFields());
-    //ui.tableWidget->setRowCount(table->numRows());
 
     int i = 0;
     while (!table->eof()) {
@@ -79,7 +77,6 @@ void SQLManagerGUI::loadQueryOutput(FWDErrorReturn<CppSQLite3Query> table) {
         table->nextRow();
         i++;
     }
-
 }
 
 void SQLManagerGUI::loadTablesListView() {
@@ -113,13 +110,8 @@ void SQLManagerGUI::on_selectButton_clicked() {
 void SQLManagerGUI::on_actionOpen_triggered() {
     QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open File"), "C:/", tr("Database Files (*.db)"));
     databaseFilepath = fileNames.join("");
-  
-    QMessageBox msgBox;
-    msgBox.setText(databaseFilepath);
-    msgBox.exec();
 
     bool opened = Database::instance()->openDatabase(databaseFilepath.toStdString());
-
     if (opened) {
         loadTablesListView();
     }
@@ -133,7 +125,6 @@ void SQLManagerGUI::on_actionOpen_triggered() {
 void SQLManagerGUI::loadTableToMain() {
     QModelIndex index = ui.tablesListView->currentIndex();
     QString itemText = index.data(Qt::DisplayRole).toString();
-
     loadTable(itemText);
 }
 void SQLManagerGUI::on_tableCreated() {
@@ -158,7 +149,6 @@ void SQLManagerGUI::dropTable(QString tableName) {
     {
         qDebug() << "Successful Drop";
     }
-
 }
 
 void SQLManagerGUI::on_commandPromptInputLineEdit_returnPressed() {
@@ -173,7 +163,6 @@ void SQLManagerGUI::on_commandPromptInputLineEdit_returnPressed() {
     QTextStream s(&input);
     QString firstWord;
     s >> firstWord;
-
 
     if (firstWord.toUpper() == "SELECT") {
         auto table = Database::instance()->queryDatabase(input.toStdString());
