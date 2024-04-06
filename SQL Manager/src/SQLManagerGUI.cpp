@@ -91,7 +91,7 @@ void SQLManagerGUI::on_createButton_clicked() {
     createPg->setModal(true);
     createPg->show();
     //createPg->exec();
-    connect(createPg, &CreatePage::tableCreated, this, &SQLManagerGUI::on_tableCreated);
+    connect(createPg, &CreatePage::tableCreated, this, &SQLManagerGUI::updateTableCreated);
 }
 
 void SQLManagerGUI::on_insertButton_clicked() {
@@ -117,35 +117,6 @@ void SQLManagerGUI::on_actionOpen_triggered() {
         QMessageBox msgBox;
         msgBox.setText("Error opening database.");
         msgBox.exec();
-    }
-}
-
-void SQLManagerGUI::loadTableToMain() {
-    QModelIndex index = ui.tablesListView->currentIndex();
-    QString itemText = index.data(Qt::DisplayRole).toString();
-    loadTable(itemText);
-}
-void SQLManagerGUI::on_tableCreated() {
-    loadTablesListView();
-}
-
-void SQLManagerGUI::dropTable(QString tableName) {
-
-    QMessageBox msgBox;
-    msgBox.setText("drop table: " + tableName);
-    msgBox.exec();
-
-    sqlGenerator::DropModel sqlCommand;
-    sqlCommand.tableName(tableName.toStdString());
-    
-    if (Database::instance()->sqlExec(sqlCommand.str()))
-    {
-        qDebug() << "Successful Drop";
-        loadTablesListView();
-    }
-    else
-    {
-        qDebug() << "Successful Drop";
     }
 }
 
@@ -183,8 +154,36 @@ void SQLManagerGUI::on_commandPromptInputLineEdit_returnPressed() {
             ui.commandPromptOutputTextEdit->append(QString::fromStdString(cmdSucceeded.what()));
         }
     }
+}
+
+void SQLManagerGUI::loadTableToMain() {
+    QModelIndex index = ui.tablesListView->currentIndex();
+    QString itemText = index.data(Qt::DisplayRole).toString();
+    loadTable(itemText);
+}
+void SQLManagerGUI::updateTableCreated(std::string sqlCommand) {
+    ui.commandPromptOutputTextEdit->append(QString::fromStdString(sqlCommand));
+    loadTablesListView();
+}
+
+void SQLManagerGUI::dropTable(QString tableName) {
+
+    QMessageBox msgBox;
+    msgBox.setText("drop table: " + tableName);
+    msgBox.exec();
+
+    sqlGenerator::DropModel sqlCommand;
+    sqlCommand.tableName(tableName.toStdString());
     
-    
+    if (Database::instance()->sqlExec(sqlCommand.str()))
+    {
+        qDebug() << "Successful Drop";
+        loadTablesListView();
+    }
+    else
+    {
+        qDebug() << "Successful Drop";
+    }
 }
 
 void SQLManagerGUI::popupTablesContextMenu(QPoint pos) {

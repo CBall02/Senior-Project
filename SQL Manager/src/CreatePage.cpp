@@ -1,5 +1,6 @@
 #include "CreatePage.h"
 #include <sqlGenerator.h>
+#include <QCheckBox>
 
 CreatePage::CreatePage(QWidget* parent)
 	: QDialog(parent)
@@ -10,7 +11,6 @@ CreatePage::CreatePage(QWidget* parent)
 
 CreatePage::~CreatePage()
 {}
-
 
 //	add a new row to vertical layout above the spacer with two line edits
 void CreatePage::on_plusButton_clicked()
@@ -79,7 +79,7 @@ void CreatePage::on_createButton_clicked()
 	}
 	if (Database::instance()->sqlExec(sqlCommand.str()))
 	{
-		emit tableCreated();
+		emit tableCreated(sqlCommand.str());
 		close();
 	}
 	else
@@ -110,9 +110,15 @@ void CreatePage::addAttribute()
 	newLine->addWidget(primaryKey);
 	newLine->addWidget(unique);
 	newLine->addWidget(notNull);
-	connect(primaryKey, SIGNAL(stateChanged()), this, SLOT(on_primaryKey_clicked()));
-	connect(unique, SIGNAL(stateChanged()), this, SLOT(on_unique_or_notNull_clicked()));
-	connect(notNull, SIGNAL(stateChanged()), this, SLOT(on_unique_or_notNull_clicked()));
+
+	/*connect(primaryKey, &QCheckBox::clicked, this, &CreatePage::primaryKeyClicked);
+	connect(unique, &QCheckBox::clicked, this, &CreatePage::uniqueOrNotNullClicked);
+	connect(notNull, &QCheckBox::clicked, this, &CreatePage::uniqueOrNotNullClicked);*/
+
+	connect(primaryKey, SIGNAL(clicked()), this, SLOT(primaryKeyClicked()));
+	connect(unique, SIGNAL(clicked()), this, SLOT(uniqueOrNotNullClicked()));
+	connect(notNull, SIGNAL(clicked()), this, SLOT(uniqueOrNotNullClicked()));
+
 	tableNames.push_back(name);
 	tableTypes.push_back(type);
 	tableConstraints.push_back(primaryKey);
@@ -122,20 +128,31 @@ void CreatePage::addAttribute()
 	numAttributes++;
 }
 
-void CreatePage::on_primaryKey_clicked()
-{
+void CreatePage::primaryKeyClicked() {
 	QCheckBox* primaryKey = qobject_cast<QCheckBox*>(sender());
-	//delete primaryKey;
-	for (int i = 0; i < numAttributes; i++)
-	{
-		if (primaryKey != tableConstraints.at(3 * i))
+	if (primaryKey->isChecked()) {
+		for (int i = 0; i < numAttributes; i++)
 		{
-			tableConstraints.at(3 * i)->setCheckState(Qt::Unchecked);
+			if (primaryKey != tableConstraints.at(3 * i))
+			{
+				tableConstraints.at(3 * i)->setCheckState(Qt::Unchecked);
+			}
+			else {
+				tableConstraints.at(3 * i + 1)->setCheckState(Qt::Checked);
+				tableConstraints.at(3 * i + 2)->setCheckState(Qt::Checked);
+			}
 		}
 	}
 }
-
-void CreatePage::on_unique_or_notNull_clicked()
-{
-
+void CreatePage::uniqueOrNotNullClicked() {
+	QCheckBox* uniqueOrNull = qobject_cast<QCheckBox*>(sender());
+	if (!uniqueOrNull->isChecked()) {
+		for (int i = 0; i < numAttributes; i++)
+		{
+			if (uniqueOrNull == tableConstraints.at(3 * i + 1) || uniqueOrNull == tableConstraints.at(3 * i + 2))
+			{
+				tableConstraints.at(3 * i)->setCheckState(Qt::Unchecked);
+			}
+		}
+	}
 }
