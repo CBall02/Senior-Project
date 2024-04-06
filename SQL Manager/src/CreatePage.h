@@ -16,7 +16,7 @@ public:
 	~CreatePage();
 
 signals:
-	void tableCreated();
+	void tableCreated(std::string sqlCommand);
 
 private:
 	void addAttribute();
@@ -27,11 +27,11 @@ private:
 	std::vector<QComboBox*> tableTypes;
 	std::vector<QCheckBox*> tableConstraints;
 
-
 private slots:
 	void on_plusButton_clicked();
 	void on_createButton_clicked();
 	void on_minusButton_clicked();
-	void on_primaryKey_clicked();
-	void on_unique_or_notNull_clicked();
+	//void on_primaryKey_clicked();
+	void primaryKeyClicked();
+	void uniqueOrNotNullClicked();
 };
