@@ -1,6 +1,5 @@
 #include "CreatePage.h"
 #include <sqlGenerator.h>
-#include <QCheckBox>
 
 CreatePage::CreatePage(QWidget* parent)
 	: QDialog(parent)
