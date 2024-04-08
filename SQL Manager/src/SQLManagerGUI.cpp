@@ -1,10 +1,13 @@
 #include "SQLManagerGUI.h"
 #include "ui_SQLManagerGUI.h"
-#include "database.h"
 #include "CreatePage.h"
 #include "InsertPage.h"
 #include "SelectPage.h"
-#include <sqlGenerator.h>
+
+#include "database.h"
+#include "sqlGenerator.h"
+#include "databaseReturn.h"
+#include "CppSQLite3.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -41,7 +44,7 @@ void SQLManagerGUI::loadTable(QString tableName) {
     for (int i = 0; i < table->numFields(); i++) {
         labels << table->fieldName(i);
     }
-
+    ui.tableWidget->setRowCount(0);
     ui.tableWidget->setColumnCount(table->numFields());
     ui.tableWidget->setRowCount(table->numRows());
     ui.tableWidget->setHorizontalHeaderLabels(labels);
@@ -52,7 +55,26 @@ void SQLManagerGUI::loadTable(QString tableName) {
             ui.tableWidget->setItem(i, j, new QTableWidgetItem(QString::fromStdString(table->fieldValue(j))));
         }
     }
+}
 
+void SQLManagerGUI::loadQueryOutput(FWDErrorReturn<CppSQLite3Query> table) {
+    QStringList labels;
+    for (int i = 0; i < table->numFields(); i++) {
+        labels << table->fieldName(i);
+    }
+
+    ui.tableWidget->setRowCount(0);
+    ui.tableWidget->setColumnCount(table->numFields());
+    ui.tableWidget->setHorizontalHeaderLabels(labels);
+
+    while (!table->eof()) {
+        ui.tableWidget->insertRow(ui.tableWidget->rowCount());
+
+        for (int j = 0; j < table->numFields(); j++) {
+            ui.tableWidget->setItem(ui.tableWidget->rowCount() - 1, j, new QTableWidgetItem(QString::fromStdString(table->fieldValue(j))));
+        }
+        table->nextRow();
+    }
 }
 
 void SQLManagerGUI::loadTablesListView() {
@@ -67,8 +89,9 @@ void SQLManagerGUI::loadTablesListView() {
 void SQLManagerGUI::on_createButton_clicked() {
     CreatePage* createPg = new CreatePage();
     createPg->setModal(true);
-    createPg->exec();
-    connect(createPg, &CreatePage::tableCreated, this, &SQLManagerGUI::on_tableCreated);
+    createPg->show();
+    //createPg->exec();
+    connect(createPg, &CreatePage::tableCreated, this, &SQLManagerGUI::updateTableCreated);
 }
 
 void SQLManagerGUI::on_insertButton_clicked() {
@@ -85,13 +108,8 @@ void SQLManagerGUI::on_selectButton_clicked() {
 void SQLManagerGUI::on_actionOpen_triggered() {
     QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open File"), "C:/", tr("Database Files (*.db)"));
     databaseFilepath = fileNames.join("");
-  
-    QMessageBox msgBox;
-    msgBox.setText(databaseFilepath);
-    msgBox.exec();
 
     bool opened = Database::instance()->openDatabase(databaseFilepath.toStdString());
-
     if (opened) {
         loadTablesListView();
     }
@@ -102,13 +120,49 @@ void SQLManagerGUI::on_actionOpen_triggered() {
     }
 }
 
+void SQLManagerGUI::on_commandPromptInputLineEdit_returnPressed() {
+    QString input = ui.commandPromptInputLineEdit->text();
+    ui.commandPromptOutputTextEdit->append(input);
+    ui.commandPromptInputLineEdit->clear();
+
+    std::stringstream ss(input.toStdString());
+    std::string temp = "";
+    getline(ss, temp, ' ');
+
+    QTextStream s(&input);
+    QString firstWord;
+    s >> firstWord;
+
+    if (firstWord.toUpper() == "SELECT") {
+        auto table = Database::instance()->queryDatabase(input.toStdString());
+        if (table) {
+            loadQueryOutput(table);
+        }
+        else {
+            ui.commandPromptOutputTextEdit->append(QString::fromStdString(table.what()));
+        }
+    }
+    else {
+        auto cmdSucceeded = Database::instance()->sqlExec(input.toStdString());
+        if (cmdSucceeded)
+        {
+            if (firstWord.toUpper() == "CREATE" || firstWord.toUpper() == "DROP") {
+                loadTablesListView();
+            }
+        }
+        else {
+            ui.commandPromptOutputTextEdit->append(QString::fromStdString(cmdSucceeded.what()));
+        }
+    }
+}
+
 void SQLManagerGUI::loadTableToMain() {
     QModelIndex index = ui.tablesListView->currentIndex();
     QString itemText = index.data(Qt::DisplayRole).toString();
-
     loadTable(itemText);
 }
-void SQLManagerGUI::on_tableCreated() {
+void SQLManagerGUI::updateTableCreated(std::string sqlCommand) {
+    ui.commandPromptOutputTextEdit->append(QString::fromStdString(sqlCommand));
     loadTablesListView();
 }
 
@@ -128,52 +182,8 @@ void SQLManagerGUI::dropTable(QString tableName) {
     }
     else
     {
-        qDebug() << "Error with Drop";
+        qDebug() << "Successful Drop";
     }
-
-}
-
-void SQLManagerGUI::on_commandPromptInputLineEdit_returnPressed() {
-    QString input = ui.commandPromptInputLineEdit->text();
-    ui.commandPromptOutputTextEdit->append(input);
-    ui.commandPromptInputLineEdit->clear();
-
-    std::stringstream ss(input.toStdString());
-    std::string temp = "";
-    getline(ss, temp, ' ');
-
-    QTextStream s(&input);
-    QString firstWord;
-    s >> firstWord;
-    qDebug() << firstWord;
-
-    bool cmdSucceeded = false;
-
-    if (firstWord.toUpper() == "SELECT") {
-        try {
-            Database::instance()->queryDatabase(input.toStdString());
-            qDebug() << "Successful Query.";
-        }
-        catch (CppSQLite3Exception& e) {
-            qDebug() << "Operation Unsuccessful: " + e.errorMessage() + "\n";
-        }
-        
-    }
-    else {
-        cmdSucceeded = Database::instance()->sqlExec(input.toStdString());
-        if (cmdSucceeded)
-        {
-            if (firstWord.toUpper() == "CREATE" || firstWord.toUpper() == "DROP") {
-                loadTablesListView();
-            }
-            qDebug() << "Successful " + firstWord;
-        }
-        else {
-            ui.commandPromptOutputTextEdit->append("Error in command: " + input);
-            qDebug() << "Error with " + firstWord;
-        }
-    }
-    
 }
 
 void SQLManagerGUI::popupTablesContextMenu(QPoint pos) {
