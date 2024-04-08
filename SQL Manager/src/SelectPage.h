@@ -21,8 +21,13 @@ private:
 	void loadTablesComboBox();
 
 	std::vector<QCheckBox*> selections;
+	std::vector<QLineEdit*> conditions;
+	std::vector<QLabel*> labels;
+	int numConditions = 0;
 	Ui::SelectPageClass ui;
 
 private slots:
 	void on_tablesComboBox_currentIndexChanged(int index);
+	void on_plusButton_clicked();
+	void on_minusButton_clicked();
 };
