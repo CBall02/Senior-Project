@@ -37,7 +37,7 @@ void CreatePage::on_minusButton_clicked()
 }
 
 /*
-	read input from all line edits
+	read input from all line edits and checkboxes
 	create table with given name and properties
 	close window
 */
@@ -50,6 +50,9 @@ void CreatePage::on_createButton_clicked()
 		QLineEdit* name = tableNames.at(i);
 		int typeIndex = tableTypes.at(i)->currentIndex();
 		std::string typeString;
+		bool primary = tableConstraints.at(3 * i)->isChecked();
+		bool notNull = tableConstraints.at(3 * i + 2)->isChecked();
+		bool unique = tableConstraints.at(3 * i + 1)->isChecked();
 		if (typeIndex == 0)
 		{
 			break;
@@ -74,7 +77,7 @@ void CreatePage::on_createButton_clicked()
 		{
 			typeString = "float";
 		}
-		sqlCommand.columns(name->text().toStdString(), typeString);
+		sqlCommand.columns(name->text().toStdString(), typeString, primary, notNull, unique);
 	}
 	if (Database::instance()->sqlExec(sqlCommand.str()))
 	{
@@ -132,11 +135,8 @@ void CreatePage::primaryKeyClicked() {
 	if (primaryKey->isChecked()) {
 		for (int i = 0; i < numAttributes; i++)
 		{
-			if (primaryKey != tableConstraints.at(3 * i))
+			if (primaryKey == tableConstraints.at(3 * i))
 			{
-				tableConstraints.at(3 * i)->setCheckState(Qt::Unchecked);
-			}
-			else {
 				tableConstraints.at(3 * i + 1)->setCheckState(Qt::Checked);
 				tableConstraints.at(3 * i + 2)->setCheckState(Qt::Checked);
 			}
