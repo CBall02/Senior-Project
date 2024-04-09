@@ -20,6 +20,8 @@ private:
     void loadTable(QString tableName);
     void loadQueryOutput(FWDErrorReturn<CppSQLite3Query> table);
     void loadTablesListView();
+    void displayError(FWDErrorReturn<CppSQLite3Query> &result);
+    void displayError(FWDErrorReturn<bool> &result);
 
 private slots:
     void on_createButton_clicked();
