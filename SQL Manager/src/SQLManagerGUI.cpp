@@ -84,6 +84,17 @@ void SQLManagerGUI::loadTablesListView() {
     ui.tablesListView->setModel(new QStringListModel(tables));
 }
 
+void SQLManagerGUI::displayError(FWDErrorReturn<CppSQLite3Query> &result) {
+    ui.commandPromptOutputTextEdit->setTextColor(QColor(Qt::red));
+    ui.commandPromptOutputTextEdit->append(QString::fromStdString(result.what()));
+    ui.commandPromptOutputTextEdit->setTextColor(QColor(Qt::black));
+}
+void SQLManagerGUI::displayError(FWDErrorReturn<bool> &result) {
+    ui.commandPromptOutputTextEdit->setTextColor(QColor(Qt::red));
+    ui.commandPromptOutputTextEdit->append(QString::fromStdString(result.what()));
+    ui.commandPromptOutputTextEdit->setTextColor(QColor(Qt::black));
+}
+
 
 //Slots
 void SQLManagerGUI::on_createButton_clicked() {
@@ -109,13 +120,13 @@ void SQLManagerGUI::on_actionOpen_triggered() {
     QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open File"), "C:/", tr("Database Files (*.db)"));
     databaseFilepath = fileNames.join("");
 
-    bool opened = Database::instance()->openDatabase(databaseFilepath.toStdString());
-    if (opened) {
+    FWDErrorReturn<bool> openResult= Database::instance()->openDatabase(databaseFilepath.toStdString());
+    if (openResult) {
         loadTablesListView();
     }
     else {
         QMessageBox msgBox;
-        msgBox.setText("Error opening database.");
+        msgBox.setText(QString::fromStdString(openResult.what()));
         msgBox.exec();
     }
 }
@@ -134,24 +145,24 @@ void SQLManagerGUI::on_commandPromptInputLineEdit_returnPressed() {
     s >> firstWord;
 
     if (firstWord.toUpper() == "SELECT") {
-        auto table = Database::instance()->queryDatabase(input.toStdString());
-        if (table) {
-            loadQueryOutput(table);
+        FWDErrorReturn<CppSQLite3Query> queryResult= Database::instance()->queryDatabase(input.toStdString());
+        if (queryResult) {
+            loadQueryOutput(queryResult);
         }
         else {
-            ui.commandPromptOutputTextEdit->append(QString::fromStdString(table.what()));
+            displayError(queryResult);
         }
     }
     else {
-        auto cmdSucceeded = Database::instance()->sqlExec(input.toStdString());
-        if (cmdSucceeded)
+        FWDErrorReturn<bool> cmdResult= Database::instance()->sqlExec(input.toStdString());
+        if (cmdResult)
         {
             if (firstWord.toUpper() == "CREATE" || firstWord.toUpper() == "DROP") {
                 loadTablesListView();
             }
         }
         else {
-            ui.commandPromptOutputTextEdit->append(QString::fromStdString(cmdSucceeded.what()));
+            displayError(cmdResult);
         }
     }
 }
@@ -167,23 +178,25 @@ void SQLManagerGUI::updateTableCreated(std::string sqlCommand) {
 }
 
 void SQLManagerGUI::dropTable(QString tableName) {
+    QMessageBox::StandardButton warnMsg;
+    warnMsg = QMessageBox::warning(this, "Drop Table", "You are attempting to drop table \"" + tableName + ".\"\nThis action will delete the table permanently.\nDo you want to proceed?",
+        QMessageBox::Yes | QMessageBox::Cancel, QMessageBox::Cancel);
 
-    QMessageBox msgBox;
-    msgBox.setText("drop table: " + tableName);
-    msgBox.exec();
+    if (warnMsg == QMessageBox::Yes) {
+        sqlGenerator::DropModel sqlCommand;
+        sqlCommand.tableName(tableName.toStdString());
 
-    sqlGenerator::DropModel sqlCommand;
-    sqlCommand.tableName(tableName.toStdString());
-    
-    if (Database::instance()->sqlExec(sqlCommand.str()))
-    {
-        qDebug() << "Successful Drop";
-        loadTablesListView();
+        if (FWDErrorReturn<bool> dropResult = Database::instance()->sqlExec(sqlCommand.str()))
+        {
+            loadTablesListView();
+            ui.commandPromptOutputTextEdit->append(QString::fromStdString(sqlCommand.str()));
+        }
+        else
+        {
+            displayError(dropResult);
+        }
     }
-    else
-    {
-        qDebug() << "Successful Drop";
-    }
+    else {}
 }
 
 void SQLManagerGUI::popupTablesContextMenu(QPoint pos) {
