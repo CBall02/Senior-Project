@@ -2,7 +2,6 @@
 #include <qlineedit.h>
 
 
-int numAttributes = 3; //TODO find number of attributes
 
 InsertPage::InsertPage(QWidget *parent)
 	: QDialog(parent)

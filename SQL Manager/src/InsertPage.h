@@ -2,6 +2,7 @@
 
 #include <QDialog>
 #include "ui_InsertPage.h"
+#include "../../Backend/src/database.h"
 
 
 class InsertPage : public QDialog
