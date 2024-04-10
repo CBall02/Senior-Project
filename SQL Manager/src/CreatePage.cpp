@@ -1,10 +1,13 @@
 #include "CreatePage.h"
 #include <sqlGenerator.h>
+#include <QScrollArea>
 
 CreatePage::CreatePage(QWidget* parent)
 	: QDialog(parent)
 {
 	ui.setupUi(this);
+	ui.scrollArea->widget()->setLayout(ui.AttributesVLayout);
+	ui.AttributesVLayout->setAlignment(Qt::AlignTop);
 	addAttribute();
 }
 
@@ -31,7 +34,8 @@ void CreatePage::on_minusButton_clicked()
 			delete tableConstraints.back();
 			tableConstraints.pop_back();
 		}
-		delete ui.verticalLayout->takeAt(ui.verticalLayout->count() - 2);
+		delete ui.scrollArea->widget()->layout()->takeAt(ui.scrollArea->widget()->layout()->count() - 2);
+		//delete ui.attributesVerticalLayout->takeAt(ui.attributesVerticalLayout->count() - 2);
 		numAttributes--;
 	}
 }
@@ -98,6 +102,8 @@ void CreatePage::addAttribute()
 	QCheckBox* primaryKey = new QCheckBox();
 	QCheckBox* unique = new QCheckBox();
 	QCheckBox* notNull = new QCheckBox();
+	QWidget* attribute = new QWidget();
+
 	type->addItem("Type");
 	type->addItem("int");
 	type->addItem("varchar");
@@ -113,10 +119,6 @@ void CreatePage::addAttribute()
 	newLine->addWidget(unique);
 	newLine->addWidget(notNull);
 
-	/*connect(primaryKey, &QCheckBox::clicked, this, &CreatePage::primaryKeyClicked);
-	connect(unique, &QCheckBox::clicked, this, &CreatePage::uniqueOrNotNullClicked);
-	connect(notNull, &QCheckBox::clicked, this, &CreatePage::uniqueOrNotNullClicked);*/
-
 	connect(primaryKey, SIGNAL(clicked()), this, SLOT(primaryKeyClicked()));
 	connect(unique, SIGNAL(clicked()), this, SLOT(uniqueOrNotNullClicked()));
 	connect(notNull, SIGNAL(clicked()), this, SLOT(uniqueOrNotNullClicked()));
@@ -126,7 +128,13 @@ void CreatePage::addAttribute()
 	tableConstraints.push_back(primaryKey);
 	tableConstraints.push_back(unique);
 	tableConstraints.push_back(notNull);
-	ui.verticalLayout->insertLayout(ui.verticalLayout->count() - 1, newLine);
+
+	attribute->setLayout(newLine);
+	attribute->setFixedHeight(40);
+	attribute->setFixedWidth(400);
+	ui.scrollArea->widget()->layout()->addWidget(attribute);
+
+	//attributesVerticalLayout->insertLayout(ui.attributesVerticalLayout->count() - 1, newLine);
 	numAttributes++;
 }
 
