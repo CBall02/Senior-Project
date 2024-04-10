@@ -26,6 +26,8 @@ private:
 	int numConditions = 0;
 	Ui::SelectPageClass ui;
 
+	void addCondition();
+
 private slots:
 	void on_tablesComboBox_currentIndexChanged(int index);
 	void on_plusButton_clicked();
