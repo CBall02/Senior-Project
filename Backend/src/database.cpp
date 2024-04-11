@@ -266,78 +266,74 @@ vector<Database::Column> Database::getTableSchema(string tableName) {
 }
 
 std::regex removeWhitespace("^ +| +$|( ) +");
+std::regex betweenParen("\\((.*)\\)");
+std::regex betweenParenLastOnePossible("\\(([^\\)]*)\\)?");
+std::regex r("\\)? ?, ?(?![^(]*\\))\\(?");
+
 
 vector<Database::Column> Database::parseSchema(string& schema) {
     vector<Column> ret;
     schema.erase(std::remove(schema.begin(), schema.end(), '\n'), schema.cend());
     schema.erase(std::remove(schema.begin(), schema.end(), '\t'), schema.cend());
     schema = std::regex_replace(schema, removeWhitespace, "$1");
-    std::stringstream ss;
-    ss << schema;
-    string line;
-    std::getline(ss, line, '(');
-    std::getline(ss, line);
-    if (!line.empty() && line[0] == ' ') {
-        line = line.substr(1, line.size() - 1);
+    std::smatch matches;
+
+    if (std::regex_search(schema, matches, betweenParen)) {
+        schema = matches[1];
     }
-    line.pop_back();
+
+    schema = std::regex_replace(schema, removeWhitespace, "$1");
+
+    std::sregex_token_iterator it(schema.begin(), schema.end(), r, -1);
+    std::sregex_token_iterator end;
+
 
     vector<string> columns;
-    ss.clear();
-    ss << line;
-    while (std::getline(ss, line, ',')) {
-        columns.push_back(line);
+    
+    for (; it != end; ++it) {
+        columns.push_back(*it);
     }
+
 
     bool foundPrimaryName = false;
     std::unordered_set<string> primaries;
     for (auto& column : columns) {
-        ss.clear();
+        std::stringstream ss;
         ss << column;
         Column c;
-        ss >> c.name;
-        if (c.name == "primary") {
-            string key;
-
-            std::getline(ss, key, '(');
-            key = std::regex_replace(key, removeWhitespace, "$1");
-            if (key == "key") {
-                std::getline(ss, key, ')');
-                key = std::regex_replace(key, removeWhitespace, "$1");
-                primaries.emplace(key);
-
-                foundPrimaryName = true;
-                continue;
+        if (column.find(',') != string::npos) { // comma remains. Must be primary key definition
+            if (std::regex_search(column, matches, betweenParenLastOnePossible)) {
+                column = matches[1];
+                it = std::sregex_token_iterator(column.begin(), column.end(), r, -1);
+                for (; it != end; ++it) {
+                    primaries.emplace(*it);
+                }
             }
-            else {
-                ss.clear();
-                ss >> c.name;
-            }
-        }
-
-        if (foundPrimaryName) {
-            string key;
-            std::getline(ss, key, ')');
-            key = std::regex_replace(key, removeWhitespace, "$1");
-            primaries.emplace(key);
             continue;
         }
+        else {
+            ss >> c.name;
             
-        ss >> c.type;
+            ss >> c.type;
+
+            if (c.type.find("varchar") != string::npos && c.type[c.type.size() - 1] != ')') {
+                c.type += ")";
+            }
 
 
-        std::getline(ss, column);
+            std::getline(ss, column);
 
-        if (column.find("primary key") != string::npos) {
-            c.isNotNull = c.isUnique = c.isPrimary = true;
-        }
+            if (column.find("primary key") != string::npos) {
+                c.isNotNull = c.isUnique = c.isPrimary = true;
+            }
 
-        if (column.find("not null") != string::npos) {
-            c.isNotNull = true;
-        }
+            if (column.find("not null") != string::npos) {
+                c.isNotNull = true;
+            }
 
-        if (column.find("unique") != string::npos) {
-            c.isUnique = true;
+            if (column.find("unique") != string::npos) {
+                c.isUnique = true;
+            }
         }
 
         ret.push_back(c);
