@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <regex>
 #include <sstream>
+#include <unordered_set>
 
 #include "database.h"
 #include "CppSQLite3.h"
@@ -264,12 +265,13 @@ vector<Database::Column> Database::getTableSchema(string tableName) {
     return {};
 }
 
+std::regex removeWhitespace("^ +| +$|( ) +");
 
 vector<Database::Column> Database::parseSchema(string& schema) {
     vector<Column> ret;
     schema.erase(std::remove(schema.begin(), schema.end(), '\n'), schema.cend());
     schema.erase(std::remove(schema.begin(), schema.end(), '\t'), schema.cend());
-    schema = std::regex_replace(schema, std::regex("^ +| +$|( ) +"), "$1");
+    schema = std::regex_replace(schema, removeWhitespace, "$1");
     std::stringstream ss;
     ss << schema;
     string line;
@@ -287,11 +289,43 @@ vector<Database::Column> Database::parseSchema(string& schema) {
         columns.push_back(line);
     }
 
+    bool foundPrimaryName = false;
+    std::unordered_set<string> primaries;
     for (auto& column : columns) {
         ss.clear();
         ss << column;
         Column c;
-        ss >> c.name >> c.type;
+        ss >> c.name;
+        if (c.name == "primary") {
+            string key;
+
+            std::getline(ss, key, '(');
+            key = std::regex_replace(key, removeWhitespace, "$1");
+            if (key == "key") {
+                std::getline(ss, key, ')');
+                key = std::regex_replace(key, removeWhitespace, "$1");
+                primaries.emplace(key);
+
+                foundPrimaryName = true;
+                continue;
+            }
+            else {
+                ss.clear();
+                ss >> c.name;
+            }
+        }
+
+        if (foundPrimaryName) {
+            string key;
+            std::getline(ss, key, ')');
+            key = std::regex_replace(key, removeWhitespace, "$1");
+            primaries.emplace(key);
+            continue;
+        }
+            
+        ss >> c.type;
+
+
         std::getline(ss, column);
 
         if (column.find("primary key") != string::npos) {
@@ -308,6 +342,16 @@ vector<Database::Column> Database::parseSchema(string& schema) {
 
         ret.push_back(c);
     }
+
+    if (!primaries.empty()) {
+        for (auto& column : ret) {
+            if (primaries.find(column.name) != primaries.end()) {
+                column.isNotNull = column.isPrimary = column.isUnique = true;
+            }
+        }
+    }
+
+
 
     return ret;
 }
