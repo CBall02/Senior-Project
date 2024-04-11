@@ -340,6 +340,10 @@ namespace sqlGenerator {
         virtual const std::string& str() override {
             _sql.clear();
 
+            if (_columns.empty()) {
+                return "";
+            }
+
             _sql.append("create table ");
 
             _sql.append(_table_name);
@@ -422,6 +426,9 @@ namespace sqlGenerator {
 
         virtual const std::string& str() override {
             _sql.clear();
+            if (_table_name.empty()) {
+                return "";
+            }
             _sql.append("drop table ");
             _sql.append(_table_name);
             return _sql;
@@ -593,6 +600,11 @@ namespace sqlGenerator {
 
         virtual const std::string& str() override {
             _sql.clear();
+
+            if (_select_columns.empty()) {
+                return "";
+            }
+
             _sql.append("select ");
             if (_distinct) {
                 _sql.append("distinct ");
@@ -706,6 +718,10 @@ namespace sqlGenerator {
             _sql.clear();
             std::string v_ss;
 
+            if (_columns.empty()) {
+                return "";
+            }
+
             if (_replace) {
                 _sql.append("insert or replace into ");
             }
@@ -800,6 +816,11 @@ namespace sqlGenerator {
 
         virtual const std::string& str() override {
             _sql.clear();
+
+            if (_set_columns.empty()) {
+                return "";
+            }
+
             _sql.append("update ");
             _sql.append(_table_name);
             _sql.append(" set ");
@@ -878,6 +899,11 @@ namespace sqlGenerator {
 
         virtual const std::string& str() override {
             _sql.clear();
+
+            if (_where_condition.empty()) {
+                return "";
+            }
+
             _sql.append("delete from ");
             _sql.append(_table_name);
             size_t size = _where_condition.size();

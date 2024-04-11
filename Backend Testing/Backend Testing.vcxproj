@@ -28,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\catch_amalgamated.cpp" />
+    <ClCompile Include="src\SQLGenTests.cpp" />
     <ClCompile Include="src\TestCases.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
