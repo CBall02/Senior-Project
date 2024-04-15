@@ -34,7 +34,8 @@ void CreatePage::on_minusButton_clicked()
 			delete tableConstraints.back();
 			tableConstraints.pop_back();
 		}
-		delete ui.scrollArea->widget()->layout()->takeAt(ui.scrollArea->widget()->layout()->count() - 2);
+
+		delete ui.scrollArea->widget()->layout()->takeAt(ui.scrollArea->widget()->layout()->count() - 1);
 		//delete ui.attributesVerticalLayout->takeAt(ui.attributesVerticalLayout->count() - 2);
 		numAttributes--;
 	}
