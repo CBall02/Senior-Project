@@ -3,6 +3,8 @@
 #include "CreatePage.h"
 #include "InsertPage.h"
 #include "SelectPage.h"
+#include "UpdatePage.h"
+#include "DeletePage.h"
 
 #include "database.h"
 #include "sqlGenerator.h"
@@ -114,6 +116,16 @@ void SQLManagerGUI::on_insertButton_clicked() {
 void SQLManagerGUI::on_selectButton_clicked() {
     SelectPage* selectPg = new SelectPage();
     selectPg->show();
+}
+
+void SQLManagerGUI::on_updateButton_clicked() {
+    UpdatePage* updatePg = new UpdatePage();
+    updatePg->show();
+}
+
+void SQLManagerGUI::on_deleteButton_clicked() {
+    DeletePage* deletePg = new DeletePage();
+    deletePg->show();
 }
 
 void SQLManagerGUI::on_actionOpen_triggered() {

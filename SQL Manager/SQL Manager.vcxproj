@@ -30,6 +30,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\SelectPage.cpp" />
     <ClCompile Include="src\SQLManagerGUI.cpp" />
+    <ClCompile Include="src\UpdatePage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="src\SQLManagerGUI.h" />
@@ -42,6 +43,7 @@
     <QtUic Include="src\InsertPage.ui" />
     <QtUic Include="src\SelectPage.ui" />
     <QtUic Include="src\SQLManagerGUI.ui" />
+    <QtUic Include="src\UpdatePage.ui" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Backend\Backend.vcxproj">
@@ -56,6 +58,9 @@
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="src\SelectPage.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="src\UpdatePage.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E72D1F0A-76E8-4C9F-B374-7D195F1D9A12}</ProjectGuid>
