@@ -210,6 +210,7 @@ void SQLManagerGUI::updateTableCreated(std::string sqlCommand) {
 void SQLManagerGUI::performSelectCommand(std::string sqlCommand) {
     if (auto result = Database::instance()->queryDatabase(sqlCommand)) {
         ui.commandPromptOutputTextEdit->append(QString::fromStdString(sqlCommand));
+        loadQueryOutput(result);
         emit selectCommandSuccessful();
     }
     else {
