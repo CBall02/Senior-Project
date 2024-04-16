@@ -113,20 +113,49 @@ void SQLManagerGUI::on_insertButton_clicked() {
 
 void SQLManagerGUI::on_selectButton_clicked() {
     SelectPage* selectPg = new SelectPage();
+    selectPg->setModal(true);
     selectPg->show();
+    connect(selectPg, &SelectPage::selectCommandRequested, this, &SQLManagerGUI::performSelectCommand);
+    connect(this, &SQLManagerGUI::selectCommandSuccessful, this, [this, selectPg]() {selectPg->close();});
 }
 
-void SQLManagerGUI::on_actionOpen_triggered() {
-    QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open File"), "C:/", tr("Database Files (*.db)"));
-    databaseFilepath = fileNames.join("");
+void SQLManagerGUI::on_actionNew_triggered() {
+    databaseFilepath = QFileDialog::getSaveFileName(this, tr("Create New File"), "C:/", tr("Database Files (*.db)"));
 
-    FWDErrorReturn<bool> openResult= Database::instance()->openDatabase(databaseFilepath.toStdString());
+    QFile file(databaseFilepath);
+
+    FWDErrorReturn<bool> openResult = Database::instance()->openDatabase(databaseFilepath.toStdString());
     if (openResult) {
         loadTablesListView();
     }
     else {
         QMessageBox msgBox;
         msgBox.setText(QString::fromStdString(openResult.what()));
+        msgBox.exec();
+    }
+}
+
+void SQLManagerGUI::on_actionOpen_triggered() {
+    databaseFilepath = QFileDialog::getOpenFileName(this, tr("Open File"), "C:/", tr("Database Files (*.db)"));
+    FWDErrorReturn<bool> openResult = Database::instance()->openDatabase(databaseFilepath.toStdString());
+    if (openResult) {
+        loadTablesListView();
+    }
+    else {
+        QMessageBox msgBox;
+        msgBox.setText(QString::fromStdString(openResult.what()));
+        msgBox.exec();
+    }
+}
+
+void SQLManagerGUI::on_actionClose_triggered() {
+     
+    if (Database::instance()->closeDatabase()) {
+        loadTablesListView();
+    }
+    else {
+        QMessageBox msgBox;
+        msgBox.setText("Error closing database.");
         msgBox.exec();
     }
 }
@@ -172,9 +201,22 @@ void SQLManagerGUI::loadTableToMain() {
     QString itemText = index.data(Qt::DisplayRole).toString();
     loadTable(itemText);
 }
+
 void SQLManagerGUI::updateTableCreated(std::string sqlCommand) {
     ui.commandPromptOutputTextEdit->append(QString::fromStdString(sqlCommand));
     loadTablesListView();
+}
+
+void SQLManagerGUI::performSelectCommand(std::string sqlCommand) {
+    if (auto result = Database::instance()->queryDatabase(sqlCommand)) {
+        ui.commandPromptOutputTextEdit->append(QString::fromStdString(sqlCommand));
+        emit selectCommandSuccessful();
+    }
+    else {
+        QMessageBox msgBox;
+        msgBox.setText(QString::fromStdString(result.what()));
+        msgBox.exec();
+    }
 }
 
 void SQLManagerGUI::dropTable(QString tableName) {

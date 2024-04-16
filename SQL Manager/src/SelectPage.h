@@ -15,7 +15,8 @@ class SelectPage : public QDialog
 public:
 	SelectPage(QWidget* parent = nullptr);
 	~SelectPage();
-
+signals:
+	void selectCommandRequested(std::string sqlCommand);
 private:
 
 	void loadTablesComboBox();
@@ -32,4 +33,5 @@ private slots:
 	void on_tablesComboBox_currentIndexChanged(int index);
 	void on_plusButton_clicked();
 	void on_minusButton_clicked();
+	void on_selectButton_clicked();
 };

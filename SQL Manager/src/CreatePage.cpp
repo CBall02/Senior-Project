@@ -1,6 +1,7 @@
 #include "CreatePage.h"
 #include <sqlGenerator.h>
 #include <QScrollArea>
+#include <QMessageBox>
 
 CreatePage::CreatePage(QWidget* parent)
 	: QDialog(parent)
@@ -13,6 +14,49 @@ CreatePage::CreatePage(QWidget* parent)
 
 CreatePage::~CreatePage()
 {}
+
+void CreatePage::addAttribute()
+{
+	QHBoxLayout* newLine = new QHBoxLayout();
+	QLineEdit* name = new QLineEdit();
+	QComboBox* type = new QComboBox();
+	QCheckBox* primaryKey = new QCheckBox();
+	QCheckBox* unique = new QCheckBox();
+	QCheckBox* notNull = new QCheckBox();
+	QWidget* attribute = new QWidget();
+
+	type->addItem("Type");
+	type->addItem("int");
+	type->addItem("varchar");
+	type->addItem("boolean");
+	type->addItem("datetime");
+	type->addItem("float");
+	primaryKey->setText("Primary Key");
+	unique->setText("Unique");
+	notNull->setText("Not Null");
+	newLine->addWidget(name);
+	newLine->addWidget(type);
+	newLine->addWidget(primaryKey);
+	newLine->addWidget(unique);
+	newLine->addWidget(notNull);
+
+	connect(primaryKey, SIGNAL(clicked()), this, SLOT(primaryKeyClicked()));
+	connect(unique, SIGNAL(clicked()), this, SLOT(uniqueOrNotNullClicked()));
+	connect(notNull, SIGNAL(clicked()), this, SLOT(uniqueOrNotNullClicked()));
+
+	tableNames.push_back(name);
+	tableTypes.push_back(type);
+	tableConstraints.push_back(primaryKey);
+	tableConstraints.push_back(unique);
+	tableConstraints.push_back(notNull);
+
+	attribute->setLayout(newLine);
+	attribute->setFixedHeight(40);
+	attribute->setFixedWidth(400);
+	ui.scrollArea->widget()->layout()->addWidget(attribute);
+
+	numAttributes++;
+}
 
 //	add a new row to vertical layout above the spacer with two line edits
 void CreatePage::on_plusButton_clicked()
@@ -36,7 +80,6 @@ void CreatePage::on_minusButton_clicked()
 		}
 
 		delete ui.scrollArea->widget()->layout()->takeAt(ui.scrollArea->widget()->layout()->count() - 1);
-		//delete ui.attributesVerticalLayout->takeAt(ui.attributesVerticalLayout->count() - 2);
 		numAttributes--;
 	}
 }
@@ -84,59 +127,17 @@ void CreatePage::on_createButton_clicked()
 		}
 		sqlCommand.columns(name->text().toStdString(), typeString, primary, notNull, unique);
 	}
-	if (Database::instance()->sqlExec(sqlCommand.str()))
+	if (auto result = Database::instance()->sqlExec(sqlCommand.str()))
 	{
 		emit tableCreated(sqlCommand.str());
 		close();
 	}
 	else
 	{
-
+		QMessageBox msgBox;
+		msgBox.setText(QString::fromStdString(result.what()));
+		msgBox.exec();
 	}
-}
-
-void CreatePage::addAttribute()
-{
-	QHBoxLayout* newLine = new QHBoxLayout();
-	QLineEdit* name = new QLineEdit();
-	QComboBox* type = new QComboBox();
-	QCheckBox* primaryKey = new QCheckBox();
-	QCheckBox* unique = new QCheckBox();
-	QCheckBox* notNull = new QCheckBox();
-	QWidget* attribute = new QWidget();
-
-	type->addItem("Type");
-	type->addItem("int");
-	type->addItem("varchar");
-	type->addItem("boolean");
-	type->addItem("datetime");
-	type->addItem("float");
-	primaryKey->setText("Primary Key");
-	unique->setText("Unique");
-	notNull->setText("Not Null");
-	newLine->addWidget(name);
-	newLine->addWidget(type);
-	newLine->addWidget(primaryKey);
-	newLine->addWidget(unique);
-	newLine->addWidget(notNull);
-
-	connect(primaryKey, SIGNAL(clicked()), this, SLOT(primaryKeyClicked()));
-	connect(unique, SIGNAL(clicked()), this, SLOT(uniqueOrNotNullClicked()));
-	connect(notNull, SIGNAL(clicked()), this, SLOT(uniqueOrNotNullClicked()));
-
-	tableNames.push_back(name);
-	tableTypes.push_back(type);
-	tableConstraints.push_back(primaryKey);
-	tableConstraints.push_back(unique);
-	tableConstraints.push_back(notNull);
-
-	attribute->setLayout(newLine);
-	attribute->setFixedHeight(40);
-	attribute->setFixedWidth(400);
-	ui.scrollArea->widget()->layout()->addWidget(attribute);
-
-	//attributesVerticalLayout->insertLayout(ui.attributesVerticalLayout->count() - 1, newLine);
-	numAttributes++;
 }
 
 void CreatePage::primaryKeyClicked() {

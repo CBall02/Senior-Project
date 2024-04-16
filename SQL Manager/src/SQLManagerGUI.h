@@ -13,6 +13,9 @@ public:
     SQLManagerGUI(QWidget *parent = nullptr);
     ~SQLManagerGUI();  
 
+signals:
+    void selectCommandSuccessful();
+    void selectCommandFailed(std::string error);
 private:
     Ui::SQLManagerGUIClass ui;
     QString databaseFilepath;
@@ -27,11 +30,14 @@ private slots:
     void on_createButton_clicked();
     void on_insertButton_clicked();
     void on_selectButton_clicked();
+    void on_actionNew_triggered();
     void on_actionOpen_triggered();
+    void on_actionClose_triggered();
     void on_commandPromptInputLineEdit_returnPressed();
 
     void loadTableToMain();
     void updateTableCreated(std::string sqlCommand);
     void dropTable(QString tableName);
     void popupTablesContextMenu(QPoint pos);
+    void performSelectCommand(std::string sqlCommand);
 };
