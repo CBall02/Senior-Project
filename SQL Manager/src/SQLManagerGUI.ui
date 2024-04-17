@@ -182,7 +182,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="dropButton">
+       <widget class="QPushButton" name="deleteButton">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -195,7 +195,7 @@
          </font>
         </property>
         <property name="text">
-         <string>DROP</string>
+         <string>DELETE</string>
         </property>
        </widget>
       </item>
