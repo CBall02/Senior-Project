@@ -26,6 +26,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\CreatePage.cpp" />
+    <ClCompile Include="src\DeletePage.cpp" />
     <ClCompile Include="src\InsertPage.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\SelectPage.cpp" />
@@ -40,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="src\CreatePage.ui" />
+    <QtUic Include="src\DeletePage.ui" />
     <QtUic Include="src\InsertPage.ui" />
     <QtUic Include="src\SelectPage.ui" />
     <QtUic Include="src\SQLManagerGUI.ui" />
@@ -61,6 +63,9 @@
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="src\UpdatePage.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="src\DeletePage.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E72D1F0A-76E8-4C9F-B374-7D195F1D9A12}</ProjectGuid>

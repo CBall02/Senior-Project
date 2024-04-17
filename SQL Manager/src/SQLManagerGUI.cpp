@@ -105,6 +105,7 @@ void SQLManagerGUI::on_createButton_clicked() {
     createPg->show();
     //createPg->exec();
     connect(createPg, &CreatePage::tableCreated, this, &SQLManagerGUI::updateTableCreated);
+    connect(createPg, &CreatePage::tableCreated, this, &SQLManagerGUI::sqlCommandExecuted);
 }
 
 void SQLManagerGUI::on_insertButton_clicked() {
@@ -126,6 +127,7 @@ void SQLManagerGUI::on_updateButton_clicked() {
 void SQLManagerGUI::on_deleteButton_clicked() {
     DeletePage* deletePg = new DeletePage();
     deletePg->show();
+    connect(deletePg, &DeletePage::tableDeleted, this, &SQLManagerGUI::sqlCommandExecuted);
 }
 
 void SQLManagerGUI::on_actionOpen_triggered() {
@@ -185,8 +187,11 @@ void SQLManagerGUI::loadTableToMain() {
     loadTable(itemText);
 }
 void SQLManagerGUI::updateTableCreated(std::string sqlCommand) {
-    ui.commandPromptOutputTextEdit->append(QString::fromStdString(sqlCommand));
     loadTablesListView();
+}
+
+void SQLManagerGUI::sqlCommandExecuted(std::string sqlCommand) {
+    ui.commandPromptOutputTextEdit->append(QString::fromStdString(sqlCommand));
 }
 
 void SQLManagerGUI::dropTable(QString tableName) {

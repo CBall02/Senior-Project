@@ -41,6 +41,9 @@
     <ClCompile Include="src\UpdatePage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\DeletePage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="src\SQLManagerGUI.h">
@@ -56,6 +59,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="src\UpdatePage.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="src\DeletePage.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -78,6 +84,9 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="src\UpdatePage.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="src\DeletePage.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

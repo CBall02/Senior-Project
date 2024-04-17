@@ -33,6 +33,7 @@ private slots:
     void on_commandPromptInputLineEdit_returnPressed();
 
     void loadTableToMain();
+    void sqlCommandExecuted(std::string sqlCommand);
     void updateTableCreated(std::string sqlCommand);
     void dropTable(QString tableName);
     void popupTablesContextMenu(QPoint pos);
