@@ -30,8 +30,9 @@ void InsertPage::on_insertButton_clicked() {
 	sqlCommand.into(tables.at(ind));
 	
 	for (int i = 0; i < columns.size(); i ++) {
-		QLabel* label = qobject_cast<QLabel*>(ui.vertLayout->itemAt(2*i)->widget());
-		QLineEdit* lineEdit = qobject_cast<QLineEdit*>(ui.vertLayout->itemAt(2*i + 1)->widget());
+		QHBoxLayout* layout = qobject_cast<QHBoxLayout*>(ui.vertLayout->itemAt(i)->layout());
+		QLabel* label = qobject_cast<QLabel*>(layout->itemAt(0)->widget());//0 - attr name, 1-type 2-input
+		QLineEdit* lineEdit = qobject_cast<QLineEdit*>(layout->itemAt(2)->widget());
 
 		if (label && lineEdit) {
 			// Extract the attribute name from the label and user input from line edit
@@ -63,18 +64,29 @@ void InsertPage::on_tableDropdown_currentIndexChanged(int index) {
 	
 	//schema->setText(QString::fromStdString(tables[ind]));
 	while (QLayoutItem* item = ui.vertLayout->takeAt(0)) {
-		if (QWidget* widget = item->widget()) {
+		if (QLayout* layout = item->layout()) {
+			for (int i = 0; i < 3; i++) {
+				QWidget* widget = layout->takeAt(0)->widget();
+				delete widget;
+			}
+		}
+		else if (QWidget* widget = item->widget()) {
 			delete widget;
 		}
 		delete item;
 	}
 	for (int i = 0; i < columns.size(); i++) {
+		QHBoxLayout *itemToInsert = new QHBoxLayout;
 		QLabel *attrLabel = new QLabel();
 		attrLabel->setText(QString::fromStdString(columns[i].name));
+		QLabel* attrTypeLabel = new QLabel();
+		attrTypeLabel->setText(QString::fromStdString(columns[i].type));
 		QLineEdit* itemAttr = new QLineEdit();
 		attrLabel->setFixedHeight(20);
-		ui.vertLayout->insertWidget(ui.vertLayout->count(), attrLabel);
-		ui.vertLayout->insertWidget(ui.vertLayout->count(), itemAttr);
+		itemToInsert->insertWidget(itemToInsert->count(), attrLabel);
+		itemToInsert->insertWidget(itemToInsert->count(), attrTypeLabel);
+		itemToInsert->insertWidget(itemToInsert->count(), itemAttr);
+		ui.vertLayout->insertLayout(ui.vertLayout->count(), itemToInsert);
 	}
 	ui.vertLayout->insertSpacerItem(ui.vertLayout->count(), new QSpacerItem(20,20));
 	
