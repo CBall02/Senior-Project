@@ -31,7 +31,6 @@ private slots:
 	void on_plusButton_clicked();
 	void on_createButton_clicked();
 	void on_minusButton_clicked();
-	//void on_primaryKey_clicked();
 	void primaryKeyClicked();
 	void uniqueOrNotNullClicked();
 };

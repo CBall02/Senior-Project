@@ -25,9 +25,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\ConditionWidget.cpp" />
     <ClCompile Include="src\CreatePage.cpp" />
     <ClCompile Include="src\DeletePage.cpp" />
     <ClCompile Include="src\InsertPage.cpp" />
+    <ClCompile Include="src\JoinWidget.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\SelectPage.cpp" />
     <ClCompile Include="src\SQLManagerGUI.cpp" />
@@ -60,6 +62,12 @@
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="src\SelectPage.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="src\ConditionWidget.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="src\JoinWidget.h" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="src\UpdatePage.h" />
