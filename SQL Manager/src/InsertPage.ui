@@ -126,7 +126,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Enter your attributes under the name of each</string>
+    <string>Enter your element attributes next to the associated name.  The data type is also next to it</string>
    </property>
   </widget>
  </widget>
