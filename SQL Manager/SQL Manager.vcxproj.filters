@@ -38,6 +38,12 @@
     <ClCompile Include="src\SelectPage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\ConditionWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\JoinWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="src\SQLManagerGUI.h">
@@ -50,6 +56,12 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="src\SelectPage.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="src\ConditionWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="src\JoinWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
