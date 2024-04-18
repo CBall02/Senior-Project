@@ -140,21 +140,6 @@ void SQLManagerGUI::on_deleteButton_clicked() {
 }
 
 void SQLManagerGUI::on_actionOpen_triggered() {
-    QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open File"), "C:/", tr("Database Files (*.db)"));
-    databaseFilepath = fileNames.join("");
-
-    FWDErrorReturn<bool> openResult = Database::instance()->openDatabase(databaseFilepath.toStdString());
-    if (openResult) {
-        loadTablesListView();
-    }
-    else {
-        QMessageBox msgBox;
-        msgBox.setText(QString::fromStdString(openResult.what()));
-        msgBox.exec();
-    }
-}
-
-void SQLManagerGUI::on_actionOpen_triggered() {
     databaseFilepath = QFileDialog::getOpenFileName(this, tr("Open File"), "C:/", tr("Database Files (*.db)"));
     FWDErrorReturn<bool> openResult = Database::instance()->openDatabase(databaseFilepath.toStdString());
     if (openResult) {
