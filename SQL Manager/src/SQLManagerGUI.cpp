@@ -3,6 +3,8 @@
 #include "CreatePage.h"
 #include "InsertPage.h"
 #include "SelectPage.h"
+#include "UpdatePage.h"
+#include "DeletePage.h"
 
 #include "database.h"
 #include "sqlGenerator.h"
@@ -103,6 +105,7 @@ void SQLManagerGUI::on_createButton_clicked() {
     createPg->show();
     //createPg->exec();
     connect(createPg, &CreatePage::tableCreated, this, &SQLManagerGUI::updateTableCreated);
+    connect(createPg, &CreatePage::tableCreated, this, &SQLManagerGUI::sqlCommandExecuted);
 }
 
 void SQLManagerGUI::on_insertButton_clicked() {
@@ -123,6 +126,22 @@ void SQLManagerGUI::on_actionNew_triggered() {
     databaseFilepath = QFileDialog::getSaveFileName(this, tr("Create New File"), "C:/", tr("Database Files (*.db)"));
 
     QFile file(databaseFilepath);
+}
+
+void SQLManagerGUI::on_updateButton_clicked() {
+    UpdatePage* updatePg = new UpdatePage();
+    updatePg->show();
+}
+
+void SQLManagerGUI::on_deleteButton_clicked() {
+    DeletePage* deletePg = new DeletePage();
+    deletePg->show();
+    connect(deletePg, &DeletePage::tableDeleted, this, &SQLManagerGUI::sqlCommandExecuted);
+}
+
+void SQLManagerGUI::on_actionOpen_triggered() {
+    QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open File"), "C:/", tr("Database Files (*.db)"));
+    databaseFilepath = fileNames.join("");
 
     FWDErrorReturn<bool> openResult = Database::instance()->openDatabase(databaseFilepath.toStdString());
     if (openResult) {
@@ -203,7 +222,6 @@ void SQLManagerGUI::loadTableToMain() {
 }
 
 void SQLManagerGUI::updateTableCreated(std::string sqlCommand) {
-    ui.commandPromptOutputTextEdit->append(QString::fromStdString(sqlCommand));
     loadTablesListView();
 }
 
@@ -218,6 +236,10 @@ void SQLManagerGUI::performSelectCommand(std::string sqlCommand) {
         msgBox.setText(QString::fromStdString(result.what()));
         msgBox.exec();
     }
+}
+
+void SQLManagerGUI::sqlCommandExecuted(std::string sqlCommand) {
+    ui.commandPromptOutputTextEdit->append(QString::fromStdString(sqlCommand));
 }
 
 void SQLManagerGUI::dropTable(QString tableName) {
