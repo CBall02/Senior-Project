@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>830</width>
+    <width>831</width>
     <height>400</height>
    </rect>
   </property>
@@ -42,7 +42,24 @@
      <height>211</height>
     </rect>
    </property>
-   <layout class="QVBoxLayout" name="vertLayout" stretch="0">
+   <layout class="QVBoxLayout" name="vertLayout" stretch="0,0">
+    <item>
+     <widget class="QScrollArea" name="scrollArea">
+      <property name="widgetResizable">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="scrollAreaWidgetContents">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>487</width>
+         <height>100</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
+    </item>
     <item>
      <spacer name="verticalSpacer">
       <property name="orientation">
@@ -109,7 +126,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Enter your attributes separated by a new line</string>
+    <string>Enter your attributes under the name of each</string>
    </property>
   </widget>
  </widget>
