@@ -3,6 +3,8 @@
 #include "CreatePage.h"
 #include "InsertPage.h"
 #include "SelectPage.h"
+#include "UpdatePage.h"
+#include "DeletePage.h"
 
 #include "database.h"
 #include "sqlGenerator.h"
@@ -84,6 +86,17 @@ void SQLManagerGUI::loadTablesListView() {
     ui.tablesListView->setModel(new QStringListModel(tables));
 }
 
+void SQLManagerGUI::displayError(FWDErrorReturn<CppSQLite3Query> &result) {
+    ui.commandPromptOutputTextEdit->setTextColor(QColor(Qt::red));
+    ui.commandPromptOutputTextEdit->append(QString::fromStdString(result.what()));
+    ui.commandPromptOutputTextEdit->setTextColor(QColor(Qt::black));
+}
+void SQLManagerGUI::displayError(FWDErrorReturn<bool> &result) {
+    ui.commandPromptOutputTextEdit->setTextColor(QColor(Qt::red));
+    ui.commandPromptOutputTextEdit->append(QString::fromStdString(result.what()));
+    ui.commandPromptOutputTextEdit->setTextColor(QColor(Qt::black));
+}
+
 
 //Slots
 void SQLManagerGUI::on_createButton_clicked() {
@@ -92,6 +105,7 @@ void SQLManagerGUI::on_createButton_clicked() {
     createPg->show();
     //createPg->exec();
     connect(createPg, &CreatePage::tableCreated, this, &SQLManagerGUI::updateTableCreated);
+    connect(createPg, &CreatePage::tableCreated, this, &SQLManagerGUI::sqlCommandExecuted);
 }
 
 void SQLManagerGUI::on_insertButton_clicked() {
@@ -102,27 +116,57 @@ void SQLManagerGUI::on_insertButton_clicked() {
 
 void SQLManagerGUI::on_selectButton_clicked() {
     SelectPage* selectPg = new SelectPage();
+    selectPg->setModal(true);
     selectPg->show();
+    connect(selectPg, &SelectPage::selectCommandRequested, this, &SQLManagerGUI::performSelectCommand);
+    connect(this, &SQLManagerGUI::selectCommandSuccessful, this, [this, selectPg]() {selectPg->close();});
+}
+
+void SQLManagerGUI::on_actionNew_triggered() {
+    databaseFilepath = QFileDialog::getSaveFileName(this, tr("Create New File"), "C:/", tr("Database Files (*.db)"));
+
+    QFile file(databaseFilepath);
+}
+
+void SQLManagerGUI::on_updateButton_clicked() {
+    UpdatePage* updatePg = new UpdatePage();
+    updatePg->show();
+}
+
+void SQLManagerGUI::on_deleteButton_clicked() {
+    DeletePage* deletePg = new DeletePage();
+    deletePg->show();
+    connect(deletePg, &DeletePage::tableDeleted, this, &SQLManagerGUI::sqlCommandExecuted);
 }
 
 void SQLManagerGUI::on_actionOpen_triggered() {
-    QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open File"), "C:/", tr("Database Files (*.db)"));
-    databaseFilepath = fileNames.join("");
-
-    bool opened = Database::instance()->openDatabase(databaseFilepath.toStdString());
-    if (opened) {
+    databaseFilepath = QFileDialog::getOpenFileName(this, tr("Open File"), "C:/", tr("Database Files (*.db)"));
+    FWDErrorReturn<bool> openResult = Database::instance()->openDatabase(databaseFilepath.toStdString());
+    if (openResult) {
         loadTablesListView();
     }
     else {
         QMessageBox msgBox;
-        msgBox.setText("Error opening database.");
+        msgBox.setText(QString::fromStdString(openResult.what()));
+        msgBox.exec();
+    }
+}
+
+void SQLManagerGUI::on_actionClose_triggered() {
+     
+    if (Database::instance()->closeDatabase()) {
+        loadTablesListView();
+    }
+    else {
+        QMessageBox msgBox;
+        msgBox.setText("Error closing database.");
         msgBox.exec();
     }
 }
 
 void SQLManagerGUI::on_commandPromptInputLineEdit_returnPressed() {
     QString input = ui.commandPromptInputLineEdit->text();
-    ui.commandPromptOutputTextEdit->append(input);
+    ui.commandPromptOutputTextEdit->append("> " + input);
     ui.commandPromptInputLineEdit->clear();
 
     std::stringstream ss(input.toStdString());
@@ -134,24 +178,24 @@ void SQLManagerGUI::on_commandPromptInputLineEdit_returnPressed() {
     s >> firstWord;
 
     if (firstWord.toUpper() == "SELECT") {
-        auto table = Database::instance()->queryDatabase(input.toStdString());
-        if (table) {
-            loadQueryOutput(table);
+        FWDErrorReturn<CppSQLite3Query> queryResult= Database::instance()->queryDatabase(input.toStdString());
+        if (queryResult) {
+            loadQueryOutput(queryResult);
         }
         else {
-            ui.commandPromptOutputTextEdit->append(QString::fromStdString(table.what()));
+            displayError(queryResult);
         }
     }
     else {
-        auto cmdSucceeded = Database::instance()->sqlExec(input.toStdString());
-        if (cmdSucceeded)
+        FWDErrorReturn<bool> cmdResult= Database::instance()->sqlExec(input.toStdString());
+        if (cmdResult)
         {
             if (firstWord.toUpper() == "CREATE" || firstWord.toUpper() == "DROP") {
                 loadTablesListView();
             }
         }
         else {
-            ui.commandPromptOutputTextEdit->append(QString::fromStdString(cmdSucceeded.what()));
+            displayError(cmdResult);
         }
     }
 }
@@ -161,29 +205,48 @@ void SQLManagerGUI::loadTableToMain() {
     QString itemText = index.data(Qt::DisplayRole).toString();
     loadTable(itemText);
 }
+
 void SQLManagerGUI::updateTableCreated(std::string sqlCommand) {
-    ui.commandPromptOutputTextEdit->append(QString::fromStdString(sqlCommand));
     loadTablesListView();
 }
 
+void SQLManagerGUI::performSelectCommand(std::string sqlCommand) {
+    if (auto result = Database::instance()->queryDatabase(sqlCommand)) {
+        ui.commandPromptOutputTextEdit->append(QString::fromStdString("> " + sqlCommand));
+        loadQueryOutput(result);
+        emit selectCommandSuccessful();
+    }
+    else {
+        QMessageBox msgBox;
+        msgBox.setText(QString::fromStdString(result.what()));
+        msgBox.exec();
+    }
+}
+
+void SQLManagerGUI::sqlCommandExecuted(std::string sqlCommand) {
+    ui.commandPromptOutputTextEdit->append(QString::fromStdString("> " + sqlCommand));
+}
+
 void SQLManagerGUI::dropTable(QString tableName) {
+    QMessageBox::StandardButton warnMsg;
+    warnMsg = QMessageBox::warning(this, "Drop Table", "You are attempting to drop table \"" + tableName + ".\"\nThis action will delete the table permanently.\nDo you want to proceed?",
+        QMessageBox::Yes | QMessageBox::Cancel, QMessageBox::Cancel);
 
-    QMessageBox msgBox;
-    msgBox.setText("drop table: " + tableName);
-    msgBox.exec();
+    if (warnMsg == QMessageBox::Yes) {
+        sqlGenerator::DropModel sqlCommand;
+        sqlCommand.tableName(tableName.toStdString());
 
-    sqlGenerator::DropModel sqlCommand;
-    sqlCommand.tableName(tableName.toStdString());
-    
-    if (Database::instance()->sqlExec(sqlCommand.str()))
-    {
-        qDebug() << "Successful Drop";
-        loadTablesListView();
+        if (FWDErrorReturn<bool> dropResult = Database::instance()->sqlExec(sqlCommand.str()))
+        {
+            loadTablesListView();
+            ui.commandPromptOutputTextEdit->append(QString::fromStdString(sqlCommand.str()));
+        }
+        else
+        {
+            displayError(dropResult);
+        }
     }
-    else
-    {
-        qDebug() << "Successful Drop";
-    }
+    else {}
 }
 
 void SQLManagerGUI::popupTablesContextMenu(QPoint pos) {
