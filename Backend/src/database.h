@@ -42,7 +42,7 @@ private:
     FWDErrorReturn<bool> executeNoReturnSQL(const std::string& sqlCmd);
     static inline void print(const std::string& statement);
     inline std::exception_ptr rethrow(CppSQLite3Exception& e);
-    std::vector<Column> parseSchema(std::string& schema);
+    static std::vector<Column> parseSchema(std::string& schema);
 
 private:
     CppSQLite3DB myDatabase;
