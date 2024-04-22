@@ -286,7 +286,6 @@ namespace sqlGenerator {
     struct ForeignKey
     {
         bool isForeignKey = false;
-        //std::string columnName;
         std::string rtableName;
         std::string rcolumnName;
     };

@@ -7,6 +7,7 @@
 #include <regex>
 #include <sstream>
 #include <unordered_set>
+#include <unordered_map>
 
 #include "database.h"
 #include "CppSQLite3.h"
@@ -257,7 +258,6 @@ vector<Database::Column> Database::getTableSchema(string tableName) {
     if (!query->eof()) {
         vector<std::pair<string, string>> columns;
         string schema = query->fieldValue(0);
-        std::transform(schema.begin(), schema.end(), schema.begin(), ::tolower);
 
         return parseSchema(schema);
     }
@@ -269,10 +269,12 @@ std::regex removeWhitespace("^ +| +$|( ) +");
 std::regex betweenParen("\\((.*)\\)");
 std::regex betweenParenLastOnePossible("\\(([^\\)]*)\\)?");
 std::regex r("\\)? ?, ?(?![^(]*\\))\\(?");
+std::regex foreignKey("\\(\\s*(\\w+)\\s*\\)\\s*references\\s*(\\w+)\\s*\\(\\s*(\\w+)\\s*\\)");
 
 
 vector<Database::Column> Database::parseSchema(string& schema) {
     vector<Column> ret;
+    std::transform(schema.begin(), schema.end(), schema.begin(), ::tolower);
     schema.erase(std::remove(schema.begin(), schema.end(), '\n'), schema.cend());
     schema.erase(std::remove(schema.begin(), schema.end(), '\t'), schema.cend());
     schema = std::regex_replace(schema, removeWhitespace, "$1");
@@ -301,7 +303,7 @@ vector<Database::Column> Database::parseSchema(string& schema) {
         std::stringstream ss;
         ss << column;
         Column c;
-        if (column.find(',') != string::npos) { // comma remains. Must be primary key definition
+        if (column.find(',') != string::npos || column.starts_with("primary key")) { // comma remains. Must be primary key definition
             if (std::regex_search(column, matches, betweenParenLastOnePossible)) {
                 column = matches[1];
                 it = std::sregex_token_iterator(column.begin(), column.end(), r, -1);
@@ -309,6 +311,24 @@ vector<Database::Column> Database::parseSchema(string& schema) {
                     primaries.emplace(*it);
                 }
             }
+            continue;
+        }
+        else if (column.starts_with("foreign key")) {
+            if (std::regex_search(column, matches, foreignKey)) {
+                c.name = matches[1];
+                c.fKey.isForeignKey = true;
+                c.fKey.rtableName = matches[2];
+                c.fKey.rcolumnName = matches[3];
+            }
+            //it = std::sregex_token_iterator(column.begin(), column.end(), foreignKey);
+            
+            for (auto& col : ret) {
+                if (col.name == c.name) {
+                    col.fKey = c.fKey;
+                    break;
+                }
+            }
+
             continue;
         }
         else {
@@ -333,6 +353,16 @@ vector<Database::Column> Database::parseSchema(string& schema) {
 
             if (column.find("unique") != string::npos) {
                 c.isUnique = true;
+            }
+
+            if (column.find("foreign key") != string::npos) {
+                string foreignKeyConstraint = column.substr(column.find("foreign key"));
+                if (std::regex_search(foreignKeyConstraint, matches, foreignKey)) {
+                    c.name = matches[1];
+                    c.fKey.isForeignKey = true;
+                    c.fKey.rtableName = matches[2];
+                    c.fKey.rcolumnName = matches[3];
+                }
             }
         }
 
