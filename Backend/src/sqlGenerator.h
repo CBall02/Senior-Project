@@ -361,7 +361,7 @@ namespace sqlGenerator {
             _sql.append("(");
             size_t size = _columns.size();
             std::vector<std::string> primaries;
-            std::unordered_map<std::string, ForeignKey> foreigns;
+            std::vector<std::pair<std::string, ForeignKey>> foreigns;
             for (size_t i = 0; i < size; ++i) {
                 std::string line;
                 line.append(_columns[i] + " ");
@@ -376,7 +376,7 @@ namespace sqlGenerator {
                     line.append(" unique");
                 }
                 if (_foreignKeys[i].isForeignKey) {
-                    foreigns.emplace(_columns[i], _foreignKeys[i]);
+                    foreigns.emplace_back(_columns[i], _foreignKeys[i]);
                 }
                 _sql.append(line);
                 if (i < size - 1) {
