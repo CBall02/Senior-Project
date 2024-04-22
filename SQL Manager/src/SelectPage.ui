@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>740</width>
+    <width>1110</width>
     <height>672</height>
    </rect>
   </property>
@@ -23,13 +23,13 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
      <string>General Statements</string>
     </attribute>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>40</x>
@@ -121,27 +121,27 @@
       </item>
      </layout>
     </widget>
-    <widget class="QWidget" name="verticalLayoutWidget">
+    <widget class="QWidget" name="layoutWidget_4">
      <property name="geometry">
       <rect>
        <x>330</x>
-       <y>20</y>
+       <y>280</y>
        <width>271</width>
-       <height>461</height>
+       <height>201</height>
       </rect>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
+     <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <layout class="QHBoxLayout" name="horizontalLayout_9">
         <item>
-         <widget class="QLabel" name="label_2">
+         <widget class="QLabel" name="label_6">
           <property name="text">
-           <string>Conditions</string>
+           <string>Join Conditions</string>
           </property>
          </widget>
         </item>
         <item>
-         <spacer name="horizontalSpacer_2">
+         <spacer name="horizontalSpacer_7">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -156,20 +156,20 @@
        </layout>
       </item>
       <item>
-       <widget class="QScrollArea" name="whereConditionsScrollArea">
+       <widget class="QScrollArea" name="onConditionsScrollArea">
         <property name="widgetResizable">
          <bool>true</bool>
         </property>
-        <widget class="QWidget" name="scrollAreaWidgetContents_2">
+        <widget class="QWidget" name="scrollAreaWidgetContents_4">
          <property name="geometry">
           <rect>
            <x>0</x>
            <y>0</y>
            <width>267</width>
-           <height>377</height>
+           <height>140</height>
           </rect>
          </property>
-         <widget class="QWidget" name="layoutWidget">
+         <widget class="QWidget" name="layoutWidget_5">
           <property name="geometry">
            <rect>
             <x>10</x>
@@ -178,69 +178,39 @@
             <height>131</height>
            </rect>
           </property>
-          <layout class="QVBoxLayout" name="verticalWhereConditions"/>
+          <layout class="QVBoxLayout" name="verticalOnConditions"/>
          </widget>
         </widget>
        </widget>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_5">
-        <item>
-         <spacer name="horizontalSpacer_3">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Maximum</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>220</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QPushButton" name="whereConditionsMinusButton">
-          <property name="font">
-           <font>
-            <pointsize>20</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>-</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="whereConditionsPlusButton">
-          <property name="font">
-           <font>
-            <pointsize>20</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>+</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
+       <layout class="QHBoxLayout" name="plusMinusButtonsLayout"/>
+      </item>
+      <item>
+       <spacer name="verticalSpacer_4">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>15</height>
+         </size>
+        </property>
+       </spacer>
       </item>
      </layout>
     </widget>
-   </widget>
-   <widget class="QWidget" name="tab_2">
-    <attribute name="title">
-     <string>Join</string>
-    </attribute>
     <widget class="QWidget" name="layoutWidget_2">
      <property name="geometry">
       <rect>
-       <x>19</x>
-       <y>30</y>
+       <x>340</x>
+       <y>20</y>
        <width>261</width>
-       <height>471</height>
+       <height>231</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -285,7 +255,7 @@
            <x>0</x>
            <y>0</y>
            <width>257</width>
-           <height>387</height>
+           <height>147</height>
           </rect>
          </property>
          <widget class="QWidget" name="layoutWidget_3">
@@ -348,27 +318,32 @@
       </item>
      </layout>
     </widget>
-    <widget class="QWidget" name="layoutWidget_4">
+   </widget>
+   <widget class="QWidget" name="tab_2">
+    <attribute name="title">
+     <string>Join</string>
+    </attribute>
+    <widget class="QWidget" name="verticalLayoutWidget">
      <property name="geometry">
       <rect>
-       <x>320</x>
+       <x>160</x>
        <y>30</y>
        <width>271</width>
-       <height>471</height>
+       <height>461</height>
       </rect>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
+     <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_9">
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
-         <widget class="QLabel" name="label_6">
+         <widget class="QLabel" name="label_2">
           <property name="text">
-           <string>Join Conditions</string>
+           <string>Conditions</string>
           </property>
          </widget>
         </item>
         <item>
-         <spacer name="horizontalSpacer_7">
+         <spacer name="horizontalSpacer_2">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -383,20 +358,20 @@
        </layout>
       </item>
       <item>
-       <widget class="QScrollArea" name="onConditionsScrollArea">
+       <widget class="QScrollArea" name="whereConditionsScrollArea">
         <property name="widgetResizable">
          <bool>true</bool>
         </property>
-        <widget class="QWidget" name="scrollAreaWidgetContents_4">
+        <widget class="QWidget" name="scrollAreaWidgetContents_2">
          <property name="geometry">
           <rect>
            <x>0</x>
            <y>0</y>
            <width>267</width>
-           <height>410</height>
+           <height>377</height>
           </rect>
          </property>
-         <widget class="QWidget" name="layoutWidget_5">
+         <widget class="QWidget" name="layoutWidget_6">
           <property name="geometry">
            <rect>
             <x>10</x>
@@ -405,29 +380,54 @@
             <height>131</height>
            </rect>
           </property>
-          <layout class="QVBoxLayout" name="verticalOnConditions"/>
+          <layout class="QVBoxLayout" name="verticalWhereConditions"/>
          </widget>
         </widget>
        </widget>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="plusMinusButtonsLayout"/>
-      </item>
-      <item>
-       <spacer name="verticalSpacer_4">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Fixed</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>15</height>
-         </size>
-        </property>
-       </spacer>
+       <layout class="QHBoxLayout" name="horizontalLayout_5">
+        <item>
+         <spacer name="horizontalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Maximum</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>220</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="whereConditionsMinusButton">
+          <property name="font">
+           <font>
+            <pointsize>20</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>-</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="whereConditionsPlusButton">
+          <property name="font">
+           <font>
+            <pointsize>20</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>+</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>

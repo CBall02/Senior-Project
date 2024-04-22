@@ -22,7 +22,8 @@ public:
 	QPushButton* getPlusButton();
 	QPushButton* getMinusButton();
 
-	signals:
+signals:
+	void showChangedAttributes();
 	void showJoinConditions(JoinWidget* join);
 
 private:
@@ -38,4 +39,6 @@ private:
 
 	void plusButtonClicked();
 	void minusButtonClicked();
+private slots:
+	void on_tableName_currentIndexChanged(int index);
 };

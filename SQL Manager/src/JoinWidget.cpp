@@ -13,11 +13,16 @@ JoinWidget::JoinWidget(QObject *parent)
 	plusButton = new QPushButton("+");
 	minusButton = new QPushButton("-");
 
+	type->addItem("JOIN");
 	type->addItem("INNER JOIN");
 	type->addItem("LEFT JOIN");
+	type->addItem("LEFT OUTER JOIN");
 	type->addItem("RIGHT JOIN");
+	type->addItem("RIGHT OUTER JOIN");
 	type->addItem("FULL JOIN");
+	type->addItem("FULL OUTER JOIN");
 	type->addItem("NATURAL JOIN");
+	type->addItem("CROSS JOIN");
 	
 	tableName->clear();
 	std::vector<std::string> tables = Database::instance()->getDatabaseTables();
@@ -36,6 +41,7 @@ JoinWidget::JoinWidget(QObject *parent)
 	connect(editButton, &QPushButton::clicked, this, [this]() { emit showJoinConditions(this);  });
 	connect(plusButton, &QPushButton::clicked, this, [this]() { plusButtonClicked(); });
 	connect(minusButton, &QPushButton::clicked, this, [this]() { minusButtonClicked();  });
+	connect(tableName, &QComboBox::currentIndexChanged, this, [this]() { emit showChangedAttributes();  });
 }
 
 JoinWidget::~JoinWidget()
@@ -93,4 +99,11 @@ void JoinWidget::minusButtonClicked() {
 		conditionsList.pop_back();
 		emit showJoinConditions(this);
 	}
+}
+
+void JoinWidget::on_tableName_currentIndexChanged(int index) {
+	QMessageBox msg;
+	msg.setText("update attributes for ");
+	msg.exec();
+	emit showChangedAttributes();
 }
