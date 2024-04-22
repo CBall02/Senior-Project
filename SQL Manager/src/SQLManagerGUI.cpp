@@ -131,6 +131,7 @@ void SQLManagerGUI::on_actionNew_triggered() {
 void SQLManagerGUI::on_updateButton_clicked() {
     UpdatePage* updatePg = new UpdatePage();
     updatePg->show();
+    connect(updatePg, &UpdatePage::tableUpdated, this, &SQLManagerGUI::sqlCommandExecuted);
 }
 
 void SQLManagerGUI::on_deleteButton_clicked() {
