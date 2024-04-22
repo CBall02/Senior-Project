@@ -166,7 +166,7 @@ void SQLManagerGUI::on_actionClose_triggered() {
 
 void SQLManagerGUI::on_commandPromptInputLineEdit_returnPressed() {
     QString input = ui.commandPromptInputLineEdit->text();
-    ui.commandPromptOutputTextEdit->append(input);
+    ui.commandPromptOutputTextEdit->append("> " + input);
     ui.commandPromptInputLineEdit->clear();
 
     std::stringstream ss(input.toStdString());
@@ -212,7 +212,7 @@ void SQLManagerGUI::updateTableCreated(std::string sqlCommand) {
 
 void SQLManagerGUI::performSelectCommand(std::string sqlCommand) {
     if (auto result = Database::instance()->queryDatabase(sqlCommand)) {
-        ui.commandPromptOutputTextEdit->append(QString::fromStdString(sqlCommand));
+        ui.commandPromptOutputTextEdit->append(QString::fromStdString("> " + sqlCommand));
         loadQueryOutput(result);
         emit selectCommandSuccessful();
     }
@@ -224,7 +224,7 @@ void SQLManagerGUI::performSelectCommand(std::string sqlCommand) {
 }
 
 void SQLManagerGUI::sqlCommandExecuted(std::string sqlCommand) {
-    ui.commandPromptOutputTextEdit->append(QString::fromStdString(sqlCommand));
+    ui.commandPromptOutputTextEdit->append(QString::fromStdString("> " + sqlCommand));
 }
 
 void SQLManagerGUI::dropTable(QString tableName) {
