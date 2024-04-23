@@ -7,6 +7,16 @@ SelectPage::SelectPage(QWidget* parent)
 {
     ui.setupUi(this);
 
+    QString cs1 = "QPushButton {"
+        "background-color: rgb(210, 226, 231);"
+        "color: rgb(0, 0, 0);"
+        "}"
+        "QPushButton:hover {"
+        "background-color: rgb(255, 255, 255);"
+        "color: rgb(0, 0, 0);"
+        "}";
+    ui.selectButton->setStyleSheet(cs1);
+
     numWhereConditions = 0;
     numJoins = 0;
 

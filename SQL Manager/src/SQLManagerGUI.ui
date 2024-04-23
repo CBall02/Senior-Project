@@ -10,8 +10,13 @@
     <height>675</height>
    </rect>
   </property>
+  <property name="font">
+   <font>
+    <family>Cascadia Code Light</family>
+   </font>
+  </property>
   <property name="windowTitle">
-   <string>SQLManagerGUI</string>
+   <string>SQL Manager</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <property name="palette">
@@ -119,6 +124,7 @@
         </property>
         <property name="font">
          <font>
+          <family>Cascadia Code Light</family>
           <pointsize>12</pointsize>
          </font>
         </property>
@@ -137,6 +143,7 @@
         </property>
         <property name="font">
          <font>
+          <family>Cascadia Code Light</family>
           <pointsize>12</pointsize>
          </font>
         </property>
@@ -155,6 +162,7 @@
         </property>
         <property name="font">
          <font>
+          <family>Cascadia Code Light</family>
           <pointsize>12</pointsize>
          </font>
         </property>
@@ -173,6 +181,7 @@
         </property>
         <property name="font">
          <font>
+          <family>Cascadia Code Light</family>
           <pointsize>12</pointsize>
          </font>
         </property>
@@ -191,6 +200,7 @@
         </property>
         <property name="font">
          <font>
+          <family>Cascadia Code Light</family>
           <pointsize>12</pointsize>
          </font>
         </property>
@@ -254,6 +264,7 @@
            </property>
            <property name="font">
             <font>
+             <family>Cascadia Code Light</family>
              <pointsize>10</pointsize>
             </font>
            </property>
@@ -273,6 +284,7 @@
           <widget class="QLabel" name="label_3">
            <property name="font">
             <font>
+             <family>Cascadia Code Light</family>
              <pointsize>10</pointsize>
             </font>
            </property>
@@ -293,6 +305,7 @@
          <widget class="QLabel" name="label_2">
           <property name="font">
            <font>
+            <family>Cascadia Code Light</family>
             <pointsize>10</pointsize>
            </font>
           </property>
@@ -319,7 +332,7 @@
      <x>0</x>
      <y>0</y>
      <width>1022</width>
-     <height>22</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
