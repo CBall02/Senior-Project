@@ -124,6 +124,10 @@ void UpdatePage::addCondition()
 
 void UpdatePage::addSet()
 {
+    std::vector<std::string> tables = Database::instance()->getDatabaseTables();
+    if (tables.empty()) {
+        return;
+    }
     QHBoxLayout* newLine = new QHBoxLayout();
     QComboBox* column = new QComboBox();
     QLineEdit* condition = new QLineEdit();
@@ -133,7 +137,6 @@ void UpdatePage::addSet()
     newLine->addWidget(condition);
 
     int index = ui.tablesComboBox->currentIndex();
-    std::vector<std::string> tables = Database::instance()->getDatabaseTables();
     std::vector<Database::Column> columns = Database::instance()->getTableSchema(tables.at(index));
     for (Database::Column _column : columns)
     {

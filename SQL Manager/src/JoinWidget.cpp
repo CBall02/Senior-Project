@@ -13,6 +13,15 @@ JoinWidget::JoinWidget(QObject *parent)
 	plusButton = new QPushButton("+");
 	minusButton = new QPushButton("-");
 
+	plusButton->setMaximumSize(41, 41);
+	minusButton->setMaximumSize(41, 41);
+	QFont font = plusButton->font();
+	font.setPointSize(16);
+	plusButton->setFont(font);
+	minusButton->setFont(font);
+
+	//ui->pushButton->setStyleSheet("QPushButton{font-size: 12px;font-family: Arial;color: rgb(255, 255, 255);background-color: rgb(38,56,76);}");
+
 	type->addItem("INNER JOIN");
 	type->addItem("LEFT JOIN");
 	type->addItem("RIGHT JOIN");
@@ -36,6 +45,7 @@ JoinWidget::JoinWidget(QObject *parent)
 	connect(editButton, &QPushButton::clicked, this, [this]() { emit showJoinConditions(this);  });
 	connect(plusButton, &QPushButton::clicked, this, [this]() { plusButtonClicked(); });
 	connect(minusButton, &QPushButton::clicked, this, [this]() { minusButtonClicked();  });
+	connect(tableName, &QComboBox::currentIndexChanged, this, [this]() { emit showChangedAttributes();  });
 }
 
 JoinWidget::~JoinWidget()
@@ -93,4 +103,11 @@ void JoinWidget::minusButtonClicked() {
 		conditionsList.pop_back();
 		emit showJoinConditions(this);
 	}
+}
+
+void JoinWidget::on_tableName_currentIndexChanged(int index) {
+	QMessageBox msg;
+	msg.setText("update attributes for ");
+	msg.exec();
+	emit showChangedAttributes();
 }

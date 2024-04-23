@@ -66,25 +66,59 @@ void SelectPage::addJoin()
     numJoins++;
 
     connect(join, &JoinWidget::showJoinConditions, this, &SelectPage::displayOnConditions);
+    connect(join, &JoinWidget::showChangedAttributes, this, [this]() {updateAttributeSelection(); });
+
 }
 
+void SelectPage::updateAttributeSelection() {
 
-void SelectPage::on_tablesComboBox_currentIndexChanged(int index)
-{
+    int index = ui.tablesComboBox->currentIndex();
+    
     while (selections.size() > 0)
     {
         delete selections.back();
         selections.pop_back();
     }
+
     std::vector<std::string> tables = Database::instance()->getDatabaseTables();
     std::vector<Database::Column> columns = Database::instance()->getTableSchema(tables.at(index));
-    for (Database::Column column : columns)
-    {
-        QCheckBox* attribute = new QCheckBox();
-        attribute->setText(QString::fromStdString(column.name));
-        selections.push_back(attribute);
-        ui.attributesScrollArea->widget()->layout()->addWidget(attribute);
+
+    if (joins.size() <= 0) {
+        for (Database::Column column : columns)
+        {
+            QCheckBox* attribute = new QCheckBox();
+            attribute->setText(QString::fromStdString(column.name));
+            selections.push_back(attribute);
+            ui.attributesScrollArea->widget()->layout()->addWidget(attribute);
+        }
     }
+    else {
+        for (Database::Column column : columns)
+        {
+            QCheckBox* attribute = new QCheckBox();
+            attribute->setText(QString::fromStdString(tables.at(index)) + "." + QString::fromStdString(column.name));
+            selections.push_back(attribute);
+            ui.attributesScrollArea->widget()->layout()->addWidget(attribute);
+        }
+        for (JoinWidget* join : joins)
+        {
+            columns = Database::instance()->getTableSchema(join->getTableName().toStdString());
+
+            for (Database::Column column : columns) {
+                QCheckBox* attribute = new QCheckBox();
+                attribute->setText(join->getTableName() + "." + QString::fromStdString(column.name));
+                selections.push_back(attribute);
+                ui.attributesScrollArea->widget()->layout()->addWidget(attribute);
+            }
+
+        }
+    }
+}
+
+
+void SelectPage::on_tablesComboBox_currentIndexChanged(int index)
+{
+    updateAttributeSelection();
 }
 
 void SelectPage::on_whereConditionsPlusButton_clicked()
@@ -108,6 +142,7 @@ void SelectPage::on_whereConditionsMinusButton_clicked()
 void SelectPage::on_joinsPlusButton_clicked()
 {
     addJoin();
+    updateAttributeSelection();
 }
 
 void SelectPage::on_joinsMinusButton_clicked()
@@ -119,6 +154,7 @@ void SelectPage::on_joinsMinusButton_clicked()
         delete ui.verticalJoins->takeAt(ui.verticalJoins->count() - 1);
         numJoins--;
     }
+    updateAttributeSelection();
 }
 
 void SelectPage::on_selectButton_clicked() {
@@ -133,25 +169,26 @@ void SelectPage::on_selectButton_clicked() {
         }
     }
     sqlCommand.from(tableName);
+    /*type->addItem("JOIN");
+    type->addItem("INNER JOIN");
+    type->addItem("LEFT JOIN");
+    type->addItem("LEFT OUTER JOIN");
+    type->addItem("RIGHT JOIN");
+    type->addItem("RIGHT OUTER JOIN");
+    type->addItem("FULL JOIN");
+    type->addItem("FULL OUTER JOIN");
+    type->addItem("NATURAL JOIN");
+    type->addItem("CROSS JOIN");*/
 
     for (int i = 0; i < numJoins; i++) {
         QString type = joins[i]->getType();
         std::string joinTableName = joins[i]->getTableName().toStdString();
 
         if (type == "INNER JOIN") {
-            
+            sqlCommand.join(joinTableName);
         }
         else if (type == "LEFT JOIN") {
             sqlCommand.left_join(joinTableName);
-        }
-        else if (type == "RIGHT JOIN") {
-            sqlCommand.right_join(joinTableName);
-        }
-        else if (type == "FULL JOIN") {
-            sqlCommand.full_join(joinTableName);
-        }
-        else if (type == "NATURAL JOIN") {
-            sqlCommand.join(joinTableName);
         }
         else {
             qDebug() << "Error finding type of join.";
@@ -163,7 +200,9 @@ void SelectPage::on_selectButton_clicked() {
     }
   
     for (int i = 0; i < numWhereConditions; i++) {
-        sqlCommand.where(whereConditions[i]->text().toStdString());
+        if (whereConditions[i]->text().toStdString() != "") {
+            sqlCommand.where(whereConditions[i]->text().toStdString());
+        }
     }
     if (ui.groupByLineEdit->text() != "") {
         sqlCommand.group_by(ui.groupByLineEdit->text().toStdString());
@@ -202,4 +241,8 @@ void SelectPage::displayOnConditions(JoinWidget* join) {
     join->getPlusButton()->show();
 }
 
+void SelectPage::updateAttributeSelectionFromJoin() {
+    qDebug() << "update from join";
+    updateAttributeSelection();
+}
 

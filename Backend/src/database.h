@@ -7,18 +7,25 @@
 
 
 
+
 class Database {
 
 public:
 
     struct Column {
+        struct ForeignKey
+        {
+            bool isForeignKey = false;
+            std::string rtableName;
+            std::string rcolumnName;
+        };
+
         std::string name;
         std::string type;
         bool isNotNull = false;
         bool isUnique = false;
         bool isPrimary = false;
-
-        bool isForignKey = false;
+        ForeignKey fKey;
     };
 
     ~Database();
@@ -37,12 +44,12 @@ public:
     }
     static Database* instance();
 
+    static std::vector<Column> parseSchema(std::string& schema);
 private:
     Database(const std::string& file = ":memory:");
     FWDErrorReturn<bool> executeNoReturnSQL(const std::string& sqlCmd);
     static inline void print(const std::string& statement);
     inline std::exception_ptr rethrow(CppSQLite3Exception& e);
-    std::vector<Column> parseSchema(std::string& schema);
 
 private:
     CppSQLite3DB myDatabase;

@@ -283,6 +283,14 @@ namespace sqlGenerator {
     }
 
 
+    struct ForeignKey
+    {
+        bool isForeignKey = false;
+        std::string rtableName;
+        std::string rcolumnName;
+    };
+
+
     class SqlModel
     {
     public:
@@ -313,13 +321,15 @@ namespace sqlGenerator {
         CreateModel& columns(const std::string& c, const std::string& type, 
                              const bool& isPrimary = false, 
                              const bool& noNull = false,
-                             const bool& unique = false) 
+                             const bool& unique = false,
+                             const ForeignKey& foriegnKey = ForeignKey()) 
         {
             _columns.push_back(c);
             _types.push_back(type);
             _primary.push_back(isPrimary);
             _nullCondition.push_back(isPrimary ? true : noNull);
             _uniqueCondition.push_back(unique);
+            _foreignKeys.push_back(foriegnKey);
 
             return *this;
         }
@@ -327,9 +337,10 @@ namespace sqlGenerator {
         CreateModel& operator()(const std::string& c, const std::string& type,
                                 const bool& isPrimary = false,
                                 const bool& noNull = false,
-                                const bool& unique = false) 
+                                const bool& unique = false,
+                                const ForeignKey& foriegnKey = ForeignKey())
         {
-            return columns(c, type, isPrimary, noNull, unique);
+            return columns(c, type, isPrimary, noNull, unique, foriegnKey);
         }
 
         CreateModel& tableName(const std::string& table_name) {
@@ -346,6 +357,7 @@ namespace sqlGenerator {
             _sql.append("(");
             size_t size = _columns.size();
             std::vector<std::string> primaries;
+            std::vector<ForeignKey> foriegns;
             for (size_t i = 0; i < size; ++i) {
                 std::string line;
                 line.append(_columns[i] + " ");
@@ -358,6 +370,13 @@ namespace sqlGenerator {
                 }
                 if (_uniqueCondition[i] && !_primary[i]) {
                     line.append(" unique");
+                }
+                if (_foreignKeys[i].isForeignKey) {
+                    line.append(" foreign key references ");
+                    line.append(_foreignKeys[i].rtableName);
+                    line.append("(");
+                    line.append(_foreignKeys[i].rcolumnName);
+                    line.append(")");
                 }
                 _sql.append(line);
                 if (i < size - 1) {
@@ -385,7 +404,7 @@ namespace sqlGenerator {
             _types.clear();
             _primary.clear();
             _nullCondition.clear();
-            _foriegnKeys.clear();
+            _foreignKeys.clear();
             return *this;
         }
 
@@ -401,7 +420,7 @@ namespace sqlGenerator {
         std::vector<bool> _primary;
         std::vector<bool> _nullCondition;
         std::vector<bool> _uniqueCondition;
-        std::vector<std::tuple<bool, std::string, std::string>> _foriegnKeys;
+        std::vector<ForeignKey> _foreignKeys;
     };
 
 
@@ -486,44 +505,44 @@ namespace sqlGenerator {
         }
 
         SelectModel& join(const std::string& table_name) {
-            _join_type = "join";
-            _join_table = table_name;
+            _join_type.push_back("join");
+            _join_table.push_back(table_name);
             return *this;
         }
 
         SelectModel& left_join(const std::string& table_name) {
-            _join_type = "left join";
-            _join_table = table_name;
+            _join_type.push_back("left join");
+            _join_table.push_back(table_name);
             return *this;
         }
 
         SelectModel& left_outer_join(const std::string& table_name) {
-            _join_type = "left outer join";
-            _join_table = table_name;
+            _join_type.push_back("left outer join");
+            _join_table.push_back(table_name);
             return *this;
         }
 
         SelectModel& right_join(const std::string& table_name) {
-            _join_type = "right join";
-            _join_table = table_name;
+            _join_type.push_back("right join");
+            _join_table.push_back(table_name);
             return *this;
         }
 
         SelectModel& right_outer_join(const std::string& table_name) {
-            _join_type = "right outer join";
-            _join_table = table_name;
+            _join_type.push_back("right outer join");
+            _join_table.push_back(table_name);
             return *this;
         }
 
         SelectModel& full_join(const std::string& table_name) {
-            _join_type = "full join";
-            _join_table = table_name;
+            _join_type.push_back("full join");
+            _join_table.push_back(table_name);
             return *this;
         }
 
         SelectModel& full_outer_join(const std::string& table_name) {
-            _join_type = "full outer join";
-            _join_table = table_name;
+            _join_type.push_back("full outer join");
+            _join_table.push_back(table_name);
             return *this;
         }
 
@@ -601,10 +620,12 @@ namespace sqlGenerator {
             _sql.append(" from ");
             _sql.append(_table_name);
             if (!_join_type.empty()) {
-                _sql.append(" ");
-                _sql.append(_join_type);
-                _sql.append(" ");
-                _sql.append(_join_table);
+                for (unsigned int i = 0; i < _join_type.size(); i++) {
+                    _sql.append(" ");
+                    _sql.append(_join_type[i]);
+                    _sql.append(" ");
+                    _sql.append(_join_table[i]);
+                }
             }
             if (!_join_on_condition.empty()) {
                 _sql.append(" on ");
@@ -662,8 +683,8 @@ namespace sqlGenerator {
         bool _distinct;
         std::vector<std::string> _groupby_columns;
         std::string _table_name;
-        std::string _join_type;
-        std::string _join_table;
+        std::vector<std::string> _join_type;
+        std::vector<std::string> _join_table;
         std::vector<std::string> _join_on_condition;
         std::vector<std::string> _where_condition;
         std::vector<std::string> _having_condition;

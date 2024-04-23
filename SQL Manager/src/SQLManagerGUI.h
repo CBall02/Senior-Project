@@ -19,6 +19,7 @@ signals:
 private:
     Ui::SQLManagerGUIClass ui;
     QString databaseFilepath;
+    bool showNoFileMessageBox;
 
     void loadTable(QString tableName);
     void loadQueryOutput(FWDErrorReturn<CppSQLite3Query> table);
@@ -39,7 +40,6 @@ private slots:
 
     void loadTableToMain();
     void sqlCommandExecuted(std::string sqlCommand);
-    void updateTableCreated(std::string sqlCommand);
     void dropTable(QString tableName);
     void popupTablesContextMenu(QPoint pos);
     void performSelectCommand(std::string sqlCommand);
