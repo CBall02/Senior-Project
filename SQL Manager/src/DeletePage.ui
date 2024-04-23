@@ -30,7 +30,7 @@
        </font>
       </property>
       <property name="text">
-       <string>DELETE FROM</string>
+       <string>DELETE FROM TABLE</string>
       </property>
      </widget>
     </item>

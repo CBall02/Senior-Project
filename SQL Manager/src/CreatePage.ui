@@ -247,7 +247,7 @@
       </font>
      </property>
      <property name="text">
-      <string>CREATE Table</string>
+      <string>CREATE TABLE</string>
      </property>
     </widget>
    </item>
