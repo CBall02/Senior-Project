@@ -20,13 +20,11 @@ JoinWidget::JoinWidget(QObject *parent)
 	plusButton->setFont(font);
 	minusButton->setFont(font);
 
-	//ui->pushButton->setStyleSheet("QPushButton{font-size: 12px;font-family: Arial;color: rgb(255, 255, 255);background-color: rgb(38,56,76);}");
-
 	type->addItem("INNER JOIN");
 	type->addItem("LEFT JOIN");
-	type->addItem("RIGHT JOIN");
-	type->addItem("FULL JOIN");
-	type->addItem("NATURAL JOIN");
+	//type->addItem("RIGHT JOIN");
+	//type->addItem("FULL JOIN");
+	//type->addItem("NATURAL JOIN");
 	
 	tableName->clear();
 	std::vector<std::string> tables = Database::instance()->getDatabaseTables();

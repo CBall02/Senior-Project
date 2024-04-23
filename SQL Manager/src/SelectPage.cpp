@@ -169,16 +169,6 @@ void SelectPage::on_selectButton_clicked() {
         }
     }
     sqlCommand.from(tableName);
-    /*type->addItem("JOIN");
-    type->addItem("INNER JOIN");
-    type->addItem("LEFT JOIN");
-    type->addItem("LEFT OUTER JOIN");
-    type->addItem("RIGHT JOIN");
-    type->addItem("RIGHT OUTER JOIN");
-    type->addItem("FULL JOIN");
-    type->addItem("FULL OUTER JOIN");
-    type->addItem("NATURAL JOIN");
-    type->addItem("CROSS JOIN");*/
 
     for (int i = 0; i < numJoins; i++) {
         QString type = joins[i]->getType();
