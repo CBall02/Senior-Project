@@ -193,8 +193,16 @@ void SQLManagerGUI::on_deleteButton_clicked() {
 
 void SQLManagerGUI::on_actionNew_triggered() {
     databaseFilepath = QFileDialog::getSaveFileName(this, tr("Create New File"), "C:/", tr("Database Files (*.db)"));
-
     QFile file(databaseFilepath);
+    FWDErrorReturn<bool> openResult = Database::instance()->openDatabase(databaseFilepath.toStdString());
+    if (openResult) {
+        loadTablesListView();
+    }
+    else {
+        QMessageBox msgBox;
+        msgBox.setText(QString::fromStdString(openResult.what()));
+        msgBox.exec();
+    }
 }
 
 void SQLManagerGUI::on_actionOpen_triggered() {
