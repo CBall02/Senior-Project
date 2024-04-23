@@ -33,4 +33,5 @@ private slots:
 	void on_minusButton_clicked();
 	void primaryKeyClicked();
 	void uniqueOrNotNullClicked();
+	void on_type_changed();
 };

@@ -40,6 +40,7 @@ void CreatePage::addAttribute()
 	newLine->addWidget(unique);
 	newLine->addWidget(notNull);
 
+	connect(type, SIGNAL(currentIndexChanged()), this, SLOT(on_type_changed()));
 	connect(primaryKey, SIGNAL(clicked()), this, SLOT(primaryKeyClicked()));
 	connect(unique, SIGNAL(clicked()), this, SLOT(uniqueOrNotNullClicked()));
 	connect(notNull, SIGNAL(clicked()), this, SLOT(uniqueOrNotNullClicked()));
@@ -163,5 +164,18 @@ void CreatePage::uniqueOrNotNullClicked() {
 				tableConstraints.at(3 * i)->setCheckState(Qt::Unchecked);
 			}
 		}
+	}
+}
+
+void CreatePage::on_type_changed()
+{
+	QComboBox* type = qobject_cast<QComboBox*>(sender());
+	if (type->currentIndex() == 2) //text == "varchar"
+	{
+
+	}
+	else
+	{
+
 	}
 }
