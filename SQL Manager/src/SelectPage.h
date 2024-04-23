@@ -35,6 +35,7 @@ private:
 
 	void addWhereCondition();
 	void addJoin();
+	void updateAttributeSelection();
 
 private slots:
 	void on_tablesComboBox_currentIndexChanged(int index);
@@ -44,4 +45,5 @@ private slots:
 	void on_joinsMinusButton_clicked();
 	void on_selectButton_clicked();
 	void displayOnConditions(JoinWidget* join);
+	void updateAttributeSelectionFromJoin();
 };
