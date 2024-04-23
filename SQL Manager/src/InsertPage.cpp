@@ -1,4 +1,5 @@
 #include "InsertPage.h"
+#include <qmessagebox.h>
 #include <sqlGenerator.h>
 
 InsertPage::InsertPage(QWidget* parent)
@@ -77,13 +78,37 @@ void InsertPage::on_insertButton_clicked()
         std::string columnName = columnNames.at(i)->text().toStdString();
         std::string columnType = columnTypes.at(i)->text().toStdString();
         std::string input = columns.at(i)->text().toStdString();
-        if (columnType == "int")
+        if (columnType == "number")
         {
-            sqlCommand.insert(columnName, std::stoi(input));
+            try
+            {
+                sqlCommand.insert(columnName, std::stoi(input));
+            }
+            catch (std::invalid_argument)
+            {
+                std::string errorMessage;
+                errorMessage = "Argument \"" + columnName + "\" should have type: " + columnType;
+                QMessageBox messageBox;
+                messageBox.setText(QString::fromStdString(errorMessage));
+                messageBox.exec();
+                return;
+            }
         }
         else if (columnType == "float")
         {
-            sqlCommand.insert(columnName, std::stof(input));
+            try
+            {
+                sqlCommand.insert(columnName, std::stof(input));
+            }
+            catch (std::invalid_argument)
+            {
+                std::string errorMessage;
+                errorMessage = "Argument \"" + columnName + "\" should have type: " + columnType;
+                QMessageBox messageBox;
+                messageBox.setText(QString::fromStdString(errorMessage));
+                messageBox.exec();
+                return;
+            }
         }
         else
         {

@@ -140,9 +140,9 @@ void SQLManagerGUI::on_createButton_clicked() {
 
 void SQLManagerGUI::on_insertButton_clicked() {
     if (Database::instance()->getDatabaseTables().size() > 0) {
-        InsertPage insertPg;
-        insertPg.setModal(true);
-        insertPg.exec();
+        InsertPage* insertPg = new InsertPage();
+        insertPg->show();
+        connect(insertPg, &InsertPage::dataInserted, this, &SQLManagerGUI::sqlCommandExecuted);
     }
     else {
         QMessageBox msgBox;
