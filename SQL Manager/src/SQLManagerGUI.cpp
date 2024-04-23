@@ -21,7 +21,7 @@
 #include <string>
 #include <exception>
 
-SQLManagerGUI::SQLManagerGUI(QWidget *parent)
+SQLManagerGUI::SQLManagerGUI(QWidget* parent)
     : QMainWindow(parent)
 {
     ui.setupUi(this);
@@ -41,7 +41,7 @@ SQLManagerGUI::~SQLManagerGUI()
 //Functions
 void SQLManagerGUI::loadTable(QString tableName) {
     auto table = Database::instance()->getTable(tableName.toStdString());
-    
+
     QStringList labels;
     for (int i = 0; i < table->numFields(); i++) {
         labels << table->fieldName(i);
@@ -86,12 +86,12 @@ void SQLManagerGUI::loadTablesListView() {
     ui.tablesListView->setModel(new QStringListModel(tables));
 }
 
-void SQLManagerGUI::displayError(FWDErrorReturn<CppSQLite3Query> &result) {
+void SQLManagerGUI::displayError(FWDErrorReturn<CppSQLite3Query>& result) {
     ui.commandPromptOutputTextEdit->setTextColor(QColor(Qt::red));
     ui.commandPromptOutputTextEdit->append(QString::fromStdString(result.what()));
     ui.commandPromptOutputTextEdit->setTextColor(QColor(Qt::black));
 }
-void SQLManagerGUI::displayError(FWDErrorReturn<bool> &result) {
+void SQLManagerGUI::displayError(FWDErrorReturn<bool>& result) {
     ui.commandPromptOutputTextEdit->setTextColor(QColor(Qt::red));
     ui.commandPromptOutputTextEdit->append(QString::fromStdString(result.what()));
     ui.commandPromptOutputTextEdit->setTextColor(QColor(Qt::black));
@@ -109,9 +109,9 @@ void SQLManagerGUI::on_createButton_clicked() {
 }
 
 void SQLManagerGUI::on_insertButton_clicked() {
-    InsertPage insertPg;
-    insertPg.setModal(true);
-    insertPg.exec();
+    InsertPage* insertPg = new InsertPage();;
+    insertPg->show();
+    connect(insertPg, &InsertPage::dataInserted, this, &SQLManagerGUI::sqlCommandExecuted);
 }
 
 void SQLManagerGUI::on_selectButton_clicked() {
@@ -119,7 +119,7 @@ void SQLManagerGUI::on_selectButton_clicked() {
     selectPg->setModal(true);
     selectPg->show();
     connect(selectPg, &SelectPage::selectCommandRequested, this, &SQLManagerGUI::performSelectCommand);
-    connect(this, &SQLManagerGUI::selectCommandSuccessful, this, [this, selectPg]() {selectPg->close();});
+    connect(this, &SQLManagerGUI::selectCommandSuccessful, this, [this, selectPg]() {selectPg->close(); });
 }
 
 void SQLManagerGUI::on_actionNew_triggered() {
@@ -154,7 +154,7 @@ void SQLManagerGUI::on_actionOpen_triggered() {
 }
 
 void SQLManagerGUI::on_actionClose_triggered() {
-     
+
     if (Database::instance()->closeDatabase()) {
         loadTablesListView();
     }
@@ -179,7 +179,7 @@ void SQLManagerGUI::on_commandPromptInputLineEdit_returnPressed() {
     s >> firstWord;
 
     if (firstWord.toUpper() == "SELECT") {
-        FWDErrorReturn<CppSQLite3Query> queryResult= Database::instance()->queryDatabase(input.toStdString());
+        FWDErrorReturn<CppSQLite3Query> queryResult = Database::instance()->queryDatabase(input.toStdString());
         if (queryResult) {
             loadQueryOutput(queryResult);
         }
@@ -188,7 +188,7 @@ void SQLManagerGUI::on_commandPromptInputLineEdit_returnPressed() {
         }
     }
     else {
-        FWDErrorReturn<bool> cmdResult= Database::instance()->sqlExec(input.toStdString());
+        FWDErrorReturn<bool> cmdResult = Database::instance()->sqlExec(input.toStdString());
         if (cmdResult)
         {
             if (firstWord.toUpper() == "CREATE" || firstWord.toUpper() == "DROP") {
