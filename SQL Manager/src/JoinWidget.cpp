@@ -13,16 +13,20 @@ JoinWidget::JoinWidget(QObject *parent)
 	plusButton = new QPushButton("+");
 	minusButton = new QPushButton("-");
 
-	type->addItem("JOIN");
+	plusButton->setMaximumSize(41, 41);
+	minusButton->setMaximumSize(41, 41);
+	QFont font = plusButton->font();
+	font.setPointSize(16);
+	plusButton->setFont(font);
+	minusButton->setFont(font);
+
+	//ui->pushButton->setStyleSheet("QPushButton{font-size: 12px;font-family: Arial;color: rgb(255, 255, 255);background-color: rgb(38,56,76);}");
+
 	type->addItem("INNER JOIN");
 	type->addItem("LEFT JOIN");
-	type->addItem("LEFT OUTER JOIN");
 	type->addItem("RIGHT JOIN");
-	type->addItem("RIGHT OUTER JOIN");
 	type->addItem("FULL JOIN");
-	type->addItem("FULL OUTER JOIN");
 	type->addItem("NATURAL JOIN");
-	type->addItem("CROSS JOIN");
 	
 	tableName->clear();
 	std::vector<std::string> tables = Database::instance()->getDatabaseTables();

@@ -110,6 +110,7 @@ void SelectPage::updateAttributeSelection() {
                 selections.push_back(attribute);
                 ui.attributesScrollArea->widget()->layout()->addWidget(attribute);
             }
+
         }
     }
 }
@@ -117,21 +118,6 @@ void SelectPage::updateAttributeSelection() {
 
 void SelectPage::on_tablesComboBox_currentIndexChanged(int index)
 {
-   /* while (selections.size() > 0)
-    {
-        delete selections.back();
-        selections.pop_back();
-    }
-    std::vector<std::string> tables = Database::instance()->getDatabaseTables();
-    std::vector<Database::Column> columns = Database::instance()->getTableSchema(tables.at(index));
-    for (Database::Column column : columns)
-    {
-        QCheckBox* attribute = new QCheckBox();
-        attribute->setText(QString::fromStdString(column.name));
-        selections.push_back(attribute);
-        ui.attributesScrollArea->widget()->layout()->addWidget(attribute);
-    }*/
-
     updateAttributeSelection();
 }
 
@@ -203,27 +189,6 @@ void SelectPage::on_selectButton_clicked() {
         }
         else if (type == "LEFT JOIN") {
             sqlCommand.left_join(joinTableName);
-        }
-        else if (type == "LEFT OUTER JOIN") { //
-            sqlCommand.left_outer_join(joinTableName);
-        }
-        else if (type == "RIGHT JOIN") {//?
-            sqlCommand.right_join(joinTableName);
-        }
-        else if (type == "RIGHT OUTER JOIN") {//?
-            sqlCommand.right_outer_join(joinTableName);
-        }
-        else if (type == "FULL JOIN") {//?
-            sqlCommand.full_join(joinTableName);
-        }
-        else if (type == "FULL OUTER JOIN") {//?
-            sqlCommand.full_join(joinTableName);
-        }
-        else if (type == "NATURAL JOIN") {//?
-            sqlCommand.join(joinTableName);
-        }
-        else if (type == "CROSS JOIN") {
-            sqlCommand.join(joinTableName);
         }
         else {
             qDebug() << "Error finding type of join.";
