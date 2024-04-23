@@ -26,6 +26,20 @@ SQLManagerGUI::SQLManagerGUI(QWidget *parent)
 {
     ui.setupUi(this);
 
+    QString cs1 = "QPushButton {"
+        "background-color: rgb(210, 226, 231);"
+        "color: rgb(0, 0, 0);"
+        "}"
+        "QPushButton:hover {"
+        "background-color: rgb(255, 255, 255);"
+        "color: rgb(0, 0, 0);"
+        "}";
+    ui.createButton->setStyleSheet(cs1);
+    ui.insertButton->setStyleSheet(cs1);
+    ui.selectButton->setStyleSheet(cs1);
+    ui.updateButton->setStyleSheet(cs1);
+    ui.deleteButton->setStyleSheet(cs1);
+
     ui.commandPromptOutputTextEdit->setReadOnly(true);
     ui.splitter->setSizes(QList<int>() << 100 << 500);
     ui.splitter_2->setSizes(QList<int>() << 300 << 100);
