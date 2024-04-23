@@ -6,6 +6,15 @@ InsertPage::InsertPage(QWidget* parent)
     : QMainWindow(parent)
 {
     ui.setupUi(this);
+    QString cs1 = "QPushButton {"
+        "background-color: rgb(210, 226, 231);"
+        "color: rgb(0, 0, 0);"
+        "}"
+        "QPushButton:hover {"
+        "background-color: rgb(255, 255, 255);"
+        "color: rgb(0, 0, 0);"
+        "}";
+    ui.insertButton->setStyleSheet(cs1);
     ui.scrollArea->widget()->setLayout(ui.insertLayout);
     ui.insertLayout->setAlignment(Qt::AlignTop);
     loadTablesComboBox();
