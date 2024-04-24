@@ -143,10 +143,15 @@ void UpdatePage::on_updateButton_clicked()
     {
         sqlCommand.where(conditions.at(i)->text().toStdString());
     }
-    if (Database::instance()->sqlExec(sqlCommand.str()))
+    if (auto result = Database::instance()->sqlExec(sqlCommand.str()))
     {
         emit tableUpdated(sqlCommand.str());
         close();
+    }
+    else {
+        QMessageBox msgBox;
+        msgBox.setText(QString::fromStdString(result.what()));
+        msgBox.exec();
     }
 }
 

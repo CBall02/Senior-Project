@@ -1,5 +1,6 @@
 #include "DeletePage.h"
 #include <sqlGenerator.h>
+#include <QMessageBox>
 
 DeletePage::DeletePage(QWidget *parent)
 	: QMainWindow(parent)
@@ -77,13 +78,31 @@ void DeletePage::on_deleteButton_clicked()
 {
     sqlGenerator::DeleteModel sqlCommand;
     sqlCommand.from(ui.tablesComboBox->currentText().toStdString());
+    int result = NULL;
+    if (numConditions < 1) {
+        QMessageBox msgbox;
+        msgbox.setText("No conditions added. All entries in table will be deleted. Do you want to proceed?");
+        msgbox.setIcon(QMessageBox::Icon::Question);
+        msgbox.addButton(QMessageBox::Yes);
+        msgbox.addButton(QMessageBox::Cancel);
+        msgbox.setDefaultButton(QMessageBox::Cancel);
+        result = msgbox.exec();
+    }
+    if (result == QMessageBox::Cancel) {
+        return;
+    }
     for (int i = 0; i < numConditions; i++)
     {
         sqlCommand.where(conditions.at(i)->text().toStdString());
     }
-    if (Database::instance()->sqlExec(sqlCommand.str()))
+    if (auto result = Database::instance()->sqlExec(sqlCommand.str()))
     {
         emit tableDeleted(sqlCommand.str());
         close();
+    }
+    else {
+        QMessageBox msgBox;
+        msgBox.setText(QString::fromStdString(result.what()));
+        msgBox.exec();
     }
 }

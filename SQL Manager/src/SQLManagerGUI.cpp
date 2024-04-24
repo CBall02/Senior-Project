@@ -120,7 +120,7 @@ void SQLManagerGUI::on_createButton_clicked() {
         QMessageBox msgbox;
         msgbox.setText("No database file is currently opened. Using this command will create a table in a database in memory. Do you want to proceed?");
         msgbox.setIcon(QMessageBox::Icon::Question);
-        msgbox.addButton(QMessageBox::Ok);
+        msgbox.addButton(QMessageBox::Yes);
         msgbox.addButton(QMessageBox::Cancel);
         msgbox.setDefaultButton(QMessageBox::Cancel);
         msgbox.setCheckBox(cb);
@@ -133,23 +133,15 @@ void SQLManagerGUI::on_createButton_clicked() {
 
         result = msgbox.exec();
 
-        if (result == QMessageBox::Ok) {
-            CreatePage* createPg = new CreatePage();
-            createPg->setModal(true);
-            createPg->show();
-            //createPg->exec();
-            connect(createPg, &CreatePage::tableCreated, this, [this]() {loadTablesListView(); });
-            connect(createPg, &CreatePage::tableCreated, this, &SQLManagerGUI::sqlCommandExecuted);
+        if (result == QMessageBox::Cancel) {
+            return;
         }
     }
-    else {
         CreatePage* createPg = new CreatePage();
         createPg->setModal(true);
         createPg->show();
-        //createPg->exec();
         connect(createPg, &CreatePage::tableCreated, this, [this]() {loadTablesListView(); });
         connect(createPg, &CreatePage::tableCreated, this, &SQLManagerGUI::sqlCommandExecuted);
-    }
 }
 
 void SQLManagerGUI::on_insertButton_clicked() {

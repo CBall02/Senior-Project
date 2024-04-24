@@ -140,9 +140,14 @@ void InsertPage::on_insertButton_clicked()
             sqlCommand.insert(columnName, input);
         }
     }
-    if (Database::instance()->sqlExec(sqlCommand.str()))
+    if (auto result = Database::instance()->sqlExec(sqlCommand.str()))
     {
         emit dataInserted(sqlCommand.str());
         close();
+    }
+    else {
+        QMessageBox msgBox;
+        msgBox.setText(QString::fromStdString(result.what()));
+        msgBox.exec();
     }
 }
