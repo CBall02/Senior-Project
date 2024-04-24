@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SQL Manager", "SQL Manager\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Backend", "Backend\Backend.vcxproj", "{50FB31CD-AB3E-4054-89CE-7EA554F79839}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Backend Testing", "Backend Testing\Backend Testing.vcxproj", "{4E4A02A8-455E-408E-B4F0-D43073F2481E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,10 @@ Global
 		{50FB31CD-AB3E-4054-89CE-7EA554F79839}.Debug|x64.Build.0 = Debug|x64
 		{50FB31CD-AB3E-4054-89CE-7EA554F79839}.Release|x64.ActiveCfg = Release|x64
 		{50FB31CD-AB3E-4054-89CE-7EA554F79839}.Release|x64.Build.0 = Release|x64
+		{4E4A02A8-455E-408E-B4F0-D43073F2481E}.Debug|x64.ActiveCfg = Debug|x64
+		{4E4A02A8-455E-408E-B4F0-D43073F2481E}.Debug|x64.Build.0 = Debug|x64
+		{4E4A02A8-455E-408E-B4F0-D43073F2481E}.Release|x64.ActiveCfg = Release|x64
+		{4E4A02A8-455E-408E-B4F0-D43073F2481E}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

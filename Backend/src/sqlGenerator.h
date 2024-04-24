@@ -351,13 +351,17 @@ namespace sqlGenerator {
         virtual const std::string& str() override {
             _sql.clear();
 
+            if (_columns.empty()) {
+                return "";
+            }
+
             _sql.append("create table ");
 
             _sql.append(_table_name);
             _sql.append("(");
             size_t size = _columns.size();
             std::vector<std::string> primaries;
-            std::vector<ForeignKey> foriegns;
+            std::vector<std::pair<std::string, ForeignKey>> foreigns;
             for (size_t i = 0; i < size; ++i) {
                 std::string line;
                 line.append(_columns[i] + " ");
@@ -372,11 +376,7 @@ namespace sqlGenerator {
                     line.append(" unique");
                 }
                 if (_foreignKeys[i].isForeignKey) {
-                    line.append(" foreign key references ");
-                    line.append(_foreignKeys[i].rtableName);
-                    line.append("(");
-                    line.append(_foreignKeys[i].rcolumnName);
-                    line.append(")");
+                    foreigns.emplace_back(_columns[i], _foreignKeys[i]);
                 }
                 _sql.append(line);
                 if (i < size - 1) {
@@ -392,6 +392,20 @@ namespace sqlGenerator {
                     }
                 }
                 _sql.append(")");
+            }
+
+            if (!foreigns.empty()) {
+                for (const auto& [column, foreign] : foreigns) {
+                    _sql.append(", ");
+                    _sql.append("foreign key (");
+                    _sql.append(column);
+                    _sql.append(") references ");
+                    _sql.append(foreign.rtableName);
+                    _sql.append("(");
+                    _sql.append(foreign.rcolumnName);
+                    _sql.append(")");
+
+                }
             }
 
             _sql.append(")");
@@ -441,6 +455,9 @@ namespace sqlGenerator {
 
         virtual const std::string& str() override {
             _sql.clear();
+            if (_table_name.empty()) {
+                return "";
+            }
             _sql.append("drop table ");
             _sql.append(_table_name);
             return _sql;
@@ -612,6 +629,11 @@ namespace sqlGenerator {
 
         virtual const std::string& str() override {
             _sql.clear();
+
+            if (_select_columns.empty()) {
+                return "";
+            }
+
             _sql.append("select ");
             if (_distinct) {
                 _sql.append("distinct ");
@@ -727,6 +749,10 @@ namespace sqlGenerator {
             _sql.clear();
             std::string v_ss;
 
+            if (_columns.empty()) {
+                return "";
+            }
+
             if (_replace) {
                 _sql.append("insert or replace into ");
             }
@@ -821,6 +847,11 @@ namespace sqlGenerator {
 
         virtual const std::string& str() override {
             _sql.clear();
+
+            if (_set_columns.empty()) {
+                return "";
+            }
+
             _sql.append("update ");
             _sql.append(_table_name);
             _sql.append(" set ");
@@ -899,6 +930,11 @@ namespace sqlGenerator {
 
         virtual const std::string& str() override {
             _sql.clear();
+
+            if (_where_condition.empty()) {
+                return "";
+            }
+
             _sql.append("delete from ");
             _sql.append(_table_name);
             size_t size = _where_condition.size();
