@@ -29,7 +29,7 @@
   <ItemGroup>
     <ClCompile Include="src\catch_amalgamated.cpp" />
     <ClCompile Include="src\SQLGenTests.cpp" />
-    <ClCompile Include="src\TestCases.cpp" />
+    <ClCompile Include="src\DatabaseTests.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

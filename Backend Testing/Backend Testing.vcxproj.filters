@@ -23,7 +23,7 @@
     <ClCompile Include="src\catch_amalgamated.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\TestCases.cpp">
+    <ClCompile Include="src\DatabaseTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\SQLGenTests.cpp">
