@@ -1,94 +1,148 @@
 #include "InsertPage.h"
-#include <qlineedit.h>
+#include <qmessagebox.h>
 #include <sqlGenerator.h>
 
-std::vector<std::string> tables;
-std::vector<Database::Column> columns;
-int ind;//Important to carry these across functions
-
-InsertPage::InsertPage(QWidget *parent)
-	: QDialog(parent)
+InsertPage::InsertPage(QWidget* parent)
+    : QMainWindow(parent)
 {
-	ui.setupUi(this);
-	
-	for (int i = 0; i < numAttributes; i++) {
-		elementAttributes.push_back(new QLineEdit());
-		ui.vertLayout->insertWidget(ui.vertLayout->count() - 1, elementAttributes[i]);
-	}
-	tables = Database::instance()->getDatabaseTables();
-	for (int i = 0; i < tables.size(); i++) {
-		ui.tableDropdown->insertItem(ui.tableDropdown->count() - 1, QString::fromStdString(tables[i]));
-	}
+    ui.setupUi(this);
+    QString cs1 = "QPushButton {"
+        "background-color: rgb(210, 226, 231);"
+        "color: rgb(0, 0, 0);"
+        "}"
+        "QPushButton:hover {"
+        "background-color: rgb(255, 255, 255);"
+        "color: rgb(0, 0, 0);"
+        "}";
+    ui.insertButton->setStyleSheet(cs1);
+    ui.scrollArea->widget()->setLayout(ui.insertLayout);
+    ui.insertLayout->setAlignment(Qt::AlignTop);
+    loadTablesComboBox();
 }
 
 InsertPage::~InsertPage()
 {}
 
-void InsertPage::on_insertButton_clicked() {
-	std::vector<std::string> attributeVector;
-	sqlGenerator::InsertModel sqlCommand;
-	sqlCommand.into(tables.at(ind));
-	
-	for (int i = 0; i < columns.size(); i ++) {
-		QHBoxLayout* layout = qobject_cast<QHBoxLayout*>(ui.vertLayout->itemAt(i)->layout());
-		QLabel* label = qobject_cast<QLabel*>(layout->itemAt(0)->widget());//0 - attr name, 1-type 2-input
-		QLineEdit* lineEdit = qobject_cast<QLineEdit*>(layout->itemAt(2)->widget());
 
-		if (label && lineEdit) {
-			// Extract the attribute name from the label and user input from line edit
-			std::string attributeName = label->text().toStdString();
-			std::string attributeValue = lineEdit->text().toStdString();
-
-			// Add the attribute name and value to the vector
-			attributeVector.push_back(attributeValue);
-			// Add attribute name and value to the insert command
-			sqlCommand(attributeName, attributeValue);
-		}
-	}
-	std::string sql = sqlCommand.str();
-	if (Database::instance()->sqlExec(sqlCommand.str())) {
-		close();
-	}
+void InsertPage::loadTablesComboBox()
+{
+    ui.tablesComboBox->clear();
+    std::vector<std::string> tables = Database::instance()->getDatabaseTables();
+    for (std::string name : tables)
+    {
+        ui.tablesComboBox->addItem(QString::fromStdString(name));
+    }
 }
 
-void InsertPage::on_tableDropdown_currentIndexChanged(int index) {
-	//This is an example of qt being a really stupid library
-	if (index == ui.tableDropdown->count() - 1) {
-		ind = 0;
-	}
-	else {
-		ind = index + 1;
-	}
-	columns = Database::instance()->getTableSchema(tables.at(ind));
-	//QLabel *schema = new QLabel();
-	
-	//schema->setText(QString::fromStdString(tables[ind]));
-	while (QLayoutItem* item = ui.vertLayout->takeAt(0)) {
-		if (QLayout* layout = item->layout()) {
-			for (int i = 0; i < 3; i++) {
-				QWidget* widget = layout->takeAt(0)->widget();
-				delete widget;
-			}
-		}
-		else if (QWidget* widget = item->widget()) {
-			delete widget;
-		}
-		delete item;
-	}
-	for (int i = 0; i < columns.size(); i++) {
-		QHBoxLayout *itemToInsert = new QHBoxLayout;
-		QLabel *attrLabel = new QLabel();
-		attrLabel->setText(QString::fromStdString(columns[i].name));
-		QLabel* attrTypeLabel = new QLabel();
-		attrTypeLabel->setText(QString::fromStdString(columns[i].type));
-		QLineEdit* itemAttr = new QLineEdit();
-		attrLabel->setFixedHeight(20);
-		itemToInsert->insertWidget(itemToInsert->count(), attrLabel);
-		itemToInsert->insertWidget(itemToInsert->count(), attrTypeLabel);
-		itemToInsert->insertWidget(itemToInsert->count(), itemAttr);
-		ui.vertLayout->insertLayout(ui.vertLayout->count(), itemToInsert);
-	}
-	ui.vertLayout->insertSpacerItem(ui.vertLayout->count(), new QSpacerItem(20,20));
-	
+void InsertPage::on_tablesComboBox_currentIndexChanged(int index)
+{
+    while (numColumns > 0)
+    {
+        delete columnNames.back();
+        columnNames.pop_back();
+        delete columnTypes.back();
+        columnTypes.pop_back();
+        delete columns.back();
+        columns.pop_back();
+        delete ui.scrollArea->widget()->layout()->takeAt(ui.scrollArea->widget()->layout()->count() - 1);
+        numColumns--;
+    }
+    std::vector<std::string> tables = Database::instance()->getDatabaseTables();
+    std::vector<Database::Column> insertColumns = Database::instance()->getTableSchema(tables.at(index));
+    for (Database::Column col : insertColumns)
+    {
+        QHBoxLayout* newLine = new QHBoxLayout();
+        QLabel* name = new QLabel();
+        QLabel* type = new QLabel();
+        QLineEdit* insert = new QLineEdit();
+        QWidget* widget = new QWidget();
+
+        name->setText(QString::fromStdString(col.name));
+        type->setText(QString::fromStdString(col.type));
+        newLine->addWidget(name);
+        newLine->addWidget(type);
+        newLine->addWidget(insert);
+
+        columnNames.push_back(name);
+        columnTypes.push_back(type);
+        columns.push_back(insert);
+
+        insert->setFixedWidth(200);
+        widget->setLayout(newLine);
+        widget->setFixedHeight(40);
+        widget->setFixedWidth(400);
+        ui.scrollArea->widget()->layout()->addWidget(widget);
+
+        numColumns++;
+    }
 }
 
+void InsertPage::on_insertButton_clicked()
+{
+    sqlGenerator::InsertModel sqlCommand;
+    std::string tableName = ui.tablesComboBox->currentText().toStdString();
+    sqlCommand.into(tableName);
+    for (int i = 0; i < columns.size(); i++)
+    {
+        std::string columnName = columnNames.at(i)->text().toStdString();
+        std::string columnType = columnTypes.at(i)->text().toStdString();
+        std::string input = columns.at(i)->text().toStdString();
+        if (columnType == "number")
+        {
+            try
+            {
+                sqlCommand.insert(columnName, std::stoi(input));
+            }
+            catch (std::invalid_argument)
+            {
+                std::string errorMessage;
+                errorMessage = "Argument \"" + columnName + "\" should have type: " + columnType;
+                QMessageBox messageBox;
+                messageBox.setText(QString::fromStdString(errorMessage));
+                messageBox.exec();
+                return;
+            }
+        }
+        else if (columnType == "int")
+        {
+            try
+            {
+                sqlCommand.insert(columnName, std::stoi(input));
+            }
+            catch (std::invalid_argument)
+            {
+                std::string errorMessage;
+                errorMessage = "Argument \"" + columnName + "\" should have type: " + columnType;
+                QMessageBox messageBox;
+                messageBox.setText(QString::fromStdString(errorMessage));
+                messageBox.exec();
+                return;
+            }
+        }
+        else if (columnType == "float")
+        {
+            try
+            {
+                sqlCommand.insert(columnName, std::stof(input));
+            }
+            catch (std::invalid_argument)
+            {
+                std::string errorMessage;
+                errorMessage = "Argument \"" + columnName + "\" should have type: " + columnType;
+                QMessageBox messageBox;
+                messageBox.setText(QString::fromStdString(errorMessage));
+                messageBox.exec();
+                return;
+            }
+        }
+        else
+        {
+            sqlCommand.insert(columnName, input);
+        }
+    }
+    if (Database::instance()->sqlExec(sqlCommand.str()))
+    {
+        emit dataInserted(sqlCommand.str());
+        close();
+    }
+}

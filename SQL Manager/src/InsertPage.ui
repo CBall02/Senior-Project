@@ -1,133 +1,231 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>InsertPageClass</class>
- <widget class="QDialog" name="InsertPageClass">
+ <widget class="QMainWindow" name="InsertPageClass">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>831</width>
+    <width>522</width>
     <height>400</height>
    </rect>
   </property>
-  <property name="windowTitle">
-   <string>InsertPage</string>
+  <property name="font">
+   <font>
+    <family>Cascadia Code Light</family>
+   </font>
   </property>
-  <widget class="QPushButton" name="insertButton">
-   <property name="geometry">
-    <rect>
-     <x>680</x>
-     <y>340</y>
-     <width>131</width>
-     <height>51</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Insert</string>
-   </property>
-   <property name="Color" stdset="0">
-    <color>
-     <red>75</red>
-     <green>107</green>
-     <blue>154</blue>
-    </color>
-   </property>
-  </widget>
-  <widget class="QWidget" name="verticalLayoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>170</x>
-     <y>100</y>
-     <width>491</width>
-     <height>211</height>
-    </rect>
-   </property>
-   <layout class="QVBoxLayout" name="vertLayout" stretch="0,0">
-    <item>
-     <widget class="QScrollArea" name="scrollArea">
-      <property name="widgetResizable">
-       <bool>true</bool>
-      </property>
-      <widget class="QWidget" name="scrollAreaWidgetContents">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>487</width>
-         <height>100</height>
-        </rect>
-       </property>
-      </widget>
-     </widget>
-    </item>
-    <item>
-     <spacer name="verticalSpacer">
+  <property name="windowTitle">
+   <string>Insert</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="3" column="0">
+     <spacer name="horizontalSpacer_4">
       <property name="orientation">
-       <enum>Qt::Vertical</enum>
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Fixed</enum>
       </property>
       <property name="sizeHint" stdset="0">
        <size>
         <width>20</width>
-        <height>40</height>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="4" column="2">
+     <spacer name="verticalSpacer_3">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Fixed</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>5</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="3" column="1" colspan="2">
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QComboBox" name="tablesComboBox"/>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QScrollArea" name="scrollArea">
+        <property name="widgetResizable">
+         <bool>true</bool>
+        </property>
+        <widget class="QWidget" name="scrollAreaWidgetContents">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>438</width>
+           <height>216</height>
+          </rect>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_2">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>281</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="insertLayout"/>
+         </widget>
+        </widget>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="3" column="3">
+     <spacer name="horizontalSpacer_3">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Fixed</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>30</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="0" column="1">
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Fixed</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>10</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="5" column="2">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="insertButton">
+        <property name="minimumSize">
+         <size>
+          <width>141</width>
+          <height>41</height>
+         </size>
+        </property>
+        <property name="sizeIncrement">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>Cascadia Code Light</family>
+          <pointsize>12</pointsize>
+          <italic>false</italic>
+         </font>
+        </property>
+        <property name="text">
+         <string>INSERT</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="1" column="1">
+     <widget class="QLabel" name="label">
+      <property name="font">
+       <font>
+        <family>Cascadia Code Light</family>
+        <pointsize>16</pointsize>
+        <italic>false</italic>
+       </font>
+      </property>
+      <property name="text">
+       <string>INSERT INTO TABLE</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="2">
+     <spacer name="verticalSpacer_2">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Fixed</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>10</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="2" column="1">
+     <spacer name="verticalSpacer_4">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Fixed</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>5</height>
        </size>
       </property>
      </spacer>
     </item>
    </layout>
-  </widget>
-  <widget class="QLabel" name="titleLabel">
-   <property name="geometry">
-    <rect>
-     <x>170</x>
-     <y>0</y>
-     <width>241</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>18</pointsize>
-     <italic>true</italic>
-    </font>
-   </property>
-   <property name="text">
-    <string>INSERT into Table</string>
-   </property>
-  </widget>
-  <widget class="QWidget" name="horizontalLayoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>170</x>
-     <y>50</y>
-     <width>491</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <item>
-     <widget class="QLabel" name="tableLabel">
-      <property name="text">
-       <string>Table</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QComboBox" name="tableDropdown"/>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QLabel" name="label_2">
-   <property name="geometry">
-    <rect>
-     <x>170</x>
-     <y>80</y>
-     <width>489</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Enter your element attributes next to the associated name.  The data type is also next to it</string>
-   </property>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

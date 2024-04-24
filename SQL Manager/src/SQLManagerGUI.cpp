@@ -26,6 +26,20 @@ SQLManagerGUI::SQLManagerGUI(QWidget *parent)
 {
     ui.setupUi(this);
 
+    QString cs1 = "QPushButton {"
+        "background-color: rgb(210, 226, 231);"
+        "color: rgb(0, 0, 0);"
+        "}"
+        "QPushButton:hover {"
+        "background-color: rgb(255, 255, 255);"
+        "color: rgb(0, 0, 0);"
+        "}";
+    ui.createButton->setStyleSheet(cs1);
+    ui.insertButton->setStyleSheet(cs1);
+    ui.selectButton->setStyleSheet(cs1);
+    ui.updateButton->setStyleSheet(cs1);
+    ui.deleteButton->setStyleSheet(cs1);
+
     ui.commandPromptOutputTextEdit->setReadOnly(true);
     ui.splitter->setSizes(QList<int>() << 100 << 500);
     ui.splitter_2->setSizes(QList<int>() << 300 << 100);
@@ -100,44 +114,110 @@ void SQLManagerGUI::displayError(FWDErrorReturn<bool> &result) {
 
 //Slots
 void SQLManagerGUI::on_createButton_clicked() {
-    CreatePage* createPg = new CreatePage();
-    createPg->setModal(true);
-    createPg->show();
-    //createPg->exec();
-    connect(createPg, &CreatePage::tableCreated, this, &SQLManagerGUI::updateTableCreated);
-    connect(createPg, &CreatePage::tableCreated, this, &SQLManagerGUI::sqlCommandExecuted);
+    int result;
+    if (databaseFilepath == "" && showNoFileMessageBox) {
+        QCheckBox* cb = new QCheckBox("Don't show this again.");
+        QMessageBox msgbox;
+        msgbox.setText("No database file is currently opened. Using this command will create a table in a database in memory. Do you want to proceed?");
+        msgbox.setIcon(QMessageBox::Icon::Question);
+        msgbox.addButton(QMessageBox::Ok);
+        msgbox.addButton(QMessageBox::Cancel);
+        msgbox.setDefaultButton(QMessageBox::Cancel);
+        msgbox.setCheckBox(cb);
+
+        QObject::connect(cb, &QCheckBox::stateChanged, [this](int state) {
+            if (static_cast<Qt::CheckState>(state) == Qt::CheckState::Checked) {
+                this->showNoFileMessageBox = false;
+            }
+            });
+
+        result = msgbox.exec();
+
+        if (result == QMessageBox::Ok) {
+            CreatePage* createPg = new CreatePage();
+            createPg->setModal(true);
+            createPg->show();
+            //createPg->exec();
+            connect(createPg, &CreatePage::tableCreated, this, [this]() {loadTablesListView(); });
+            connect(createPg, &CreatePage::tableCreated, this, &SQLManagerGUI::sqlCommandExecuted);
+        }
+    }
+    else {
+        CreatePage* createPg = new CreatePage();
+        createPg->setModal(true);
+        createPg->show();
+        //createPg->exec();
+        connect(createPg, &CreatePage::tableCreated, this, [this]() {loadTablesListView(); });
+        connect(createPg, &CreatePage::tableCreated, this, &SQLManagerGUI::sqlCommandExecuted);
+    }
 }
 
 void SQLManagerGUI::on_insertButton_clicked() {
-    InsertPage insertPg;
-    insertPg.setModal(true);
-    insertPg.exec();
+    if (Database::instance()->getDatabaseTables().size() > 0) {
+        InsertPage* insertPg = new InsertPage();
+        insertPg->show();
+        connect(insertPg, &InsertPage::dataInserted, this, &SQLManagerGUI::sqlCommandExecuted);
+    }
+    else {
+        QMessageBox msgBox;
+        msgBox.setText("No tables in database. Create tables to use this command.");
+        msgBox.exec();
+    }
 }
 
 void SQLManagerGUI::on_selectButton_clicked() {
-    SelectPage* selectPg = new SelectPage();
-    selectPg->setModal(true);
-    selectPg->show();
-    connect(selectPg, &SelectPage::selectCommandRequested, this, &SQLManagerGUI::performSelectCommand);
-    connect(this, &SQLManagerGUI::selectCommandSuccessful, this, [this, selectPg]() {selectPg->close();});
+    if (Database::instance()->getDatabaseTables().size() > 0) {
+        SelectPage* selectPg = new SelectPage();
+        selectPg->setModal(true);
+        selectPg->show();
+        connect(selectPg, &SelectPage::selectCommandRequested, this, &SQLManagerGUI::performSelectCommand);
+        connect(this, &SQLManagerGUI::selectCommandSuccessful, this, [this, selectPg]() {selectPg->close(); });
+    }
+    else {
+        QMessageBox msgBox;
+        msgBox.setText("No tables in database. Create tables to use this command.");
+        msgBox.exec();
+    }
+}
+
+void SQLManagerGUI::on_updateButton_clicked() {
+    if (Database::instance()->getDatabaseTables().size() > 0) {
+    UpdatePage* updatePg = new UpdatePage();
+    updatePg->show();
+    connect(updatePg, &UpdatePage::tableUpdated, this, &SQLManagerGUI::sqlCommandExecuted);
+    }
+    else {
+        QMessageBox msgBox;
+        msgBox.setText("No tables in database. Create tables to use this command.");
+        msgBox.exec();
+    }
+}
+
+void SQLManagerGUI::on_deleteButton_clicked() {
+    if (Database::instance()->getDatabaseTables().size() > 0) {
+        DeletePage* deletePg = new DeletePage();
+        deletePg->show();
+        connect(deletePg, &DeletePage::tableDeleted, this, &SQLManagerGUI::sqlCommandExecuted);
+    }
+    else {
+        QMessageBox msgBox;
+        msgBox.setText("No tables in database. Create tables to use this command.");
+        msgBox.exec();
+    }
 }
 
 void SQLManagerGUI::on_actionNew_triggered() {
     databaseFilepath = QFileDialog::getSaveFileName(this, tr("Create New File"), "C:/", tr("Database Files (*.db)"));
-
     QFile file(databaseFilepath);
-}
-
-void SQLManagerGUI::on_updateButton_clicked() {
-    UpdatePage* updatePg = new UpdatePage();
-    updatePg->show();
-    connect(updatePg, &UpdatePage::tableUpdated, this, &SQLManagerGUI::sqlCommandExecuted);
-}
-
-void SQLManagerGUI::on_deleteButton_clicked() {
-    DeletePage* deletePg = new DeletePage();
-    deletePg->show();
-    connect(deletePg, &DeletePage::tableDeleted, this, &SQLManagerGUI::sqlCommandExecuted);
+    FWDErrorReturn<bool> openResult = Database::instance()->openDatabase(databaseFilepath.toStdString());
+    if (openResult) {
+        loadTablesListView();
+    }
+    else {
+        QMessageBox msgBox;
+        msgBox.setText(QString::fromStdString(openResult.what()));
+        msgBox.exec();
+    }
 }
 
 void SQLManagerGUI::on_actionOpen_triggered() {
@@ -157,6 +237,7 @@ void SQLManagerGUI::on_actionClose_triggered() {
      
     if (Database::instance()->closeDatabase()) {
         loadTablesListView();
+        databaseFilepath = "";
     }
     else {
         QMessageBox msgBox;
@@ -207,13 +288,9 @@ void SQLManagerGUI::loadTableToMain() {
     loadTable(itemText);
 }
 
-void SQLManagerGUI::updateTableCreated(std::string sqlCommand) {
-    loadTablesListView();
-}
-
 void SQLManagerGUI::performSelectCommand(std::string sqlCommand) {
     if (auto result = Database::instance()->queryDatabase(sqlCommand)) {
-        ui.commandPromptOutputTextEdit->append(QString::fromStdString("> " + sqlCommand));
+        ui.commandPromptOutputTextEdit->append(QString::fromStdString("> " + sqlCommand + ";"));
         loadQueryOutput(result);
         emit selectCommandSuccessful();
     }
@@ -225,7 +302,7 @@ void SQLManagerGUI::performSelectCommand(std::string sqlCommand) {
 }
 
 void SQLManagerGUI::sqlCommandExecuted(std::string sqlCommand) {
-    ui.commandPromptOutputTextEdit->append(QString::fromStdString("> " + sqlCommand));
+    ui.commandPromptOutputTextEdit->append(QString::fromStdString("> " + sqlCommand + ";"));
 }
 
 void SQLManagerGUI::dropTable(QString tableName) {
@@ -240,7 +317,7 @@ void SQLManagerGUI::dropTable(QString tableName) {
         if (FWDErrorReturn<bool> dropResult = Database::instance()->sqlExec(sqlCommand.str()))
         {
             loadTablesListView();
-            ui.commandPromptOutputTextEdit->append(QString::fromStdString(sqlCommand.str()));
+            ui.commandPromptOutputTextEdit->append(QString::fromStdString("> " + sqlCommand.str() + ";"));
         }
         else
         {

@@ -1,10 +1,20 @@
 #include "UpdatePage.h"
+#include <qmessagebox.h>
 #include <sqlGenerator.h>
 
 UpdatePage::UpdatePage(QWidget *parent)
 	: QMainWindow(parent)
 {
 	ui.setupUi(this);
+    QString cs1 = "QPushButton {"
+        "background-color: rgb(210, 226, 231);"
+        "color: rgb(0, 0, 0);"
+        "}"
+        "QPushButton:hover {"
+        "background-color: rgb(255, 255, 255);"
+        "color: rgb(0, 0, 0);"
+        "}";
+    ui.updateButton->setStyleSheet(cs1);
     ui.conditionsScrollArea->widget()->setLayout(ui.ConditionsVLayout);
     ui.ConditionsVLayout->setAlignment(Qt::AlignTop);
     ui.setScrollArea->widget()->setLayout(ui.SetVLayout);
@@ -75,13 +85,53 @@ void UpdatePage::on_updateButton_clicked()
             }
         }
         std::string setStatement = setStatements.at(i)->text().toStdString();
-        if (columnType == "int")
+        if (columnType == "number")
         {
-            sqlCommand.set(columnName, std::stoi(setStatement));
+            try
+            {
+                sqlCommand.set(columnName, std::stoi(setStatement));
+            }
+            catch (std::invalid_argument)
+            {
+                std::string errorMessage;
+                errorMessage = "Argument \"" + columnName + "\" should have type: " + columnType;
+                QMessageBox messageBox;
+                messageBox.setText(QString::fromStdString(errorMessage));
+                messageBox.exec();
+                return;
+            }
+        }
+        else if (columnType == "int")
+        {
+            try
+            {
+                sqlCommand.set(columnName, std::stoi(setStatement));
+            }
+            catch (std::invalid_argument)
+            {
+                std::string errorMessage;
+                errorMessage = "Argument \"" + columnName + "\" should have type: " + columnType;
+                QMessageBox messageBox;
+                messageBox.setText(QString::fromStdString(errorMessage));
+                messageBox.exec();
+                return;
+            }
         }
         else if (columnType == "float")
         {
-            sqlCommand.set(columnName, std::stof(setStatement));
+            try
+            {
+                sqlCommand.set(columnName, std::stof(setStatement));
+            }
+            catch (std::invalid_argument)
+            {
+                std::string errorMessage;
+                errorMessage = "Argument \"" + columnName + "\" should have type: " + columnType;
+                QMessageBox messageBox;
+                messageBox.setText(QString::fromStdString(errorMessage));
+                messageBox.exec();
+                return;
+            }
         }
         else
         {
