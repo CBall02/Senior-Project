@@ -216,3 +216,335 @@ TEST_CASE("DropModel", "[sqlgenerator::DropModel]") {
 	REQUIRE(drop.str() == "");
 }
 
+TEST_CASE("DeleteModel", "[sqlgenerator::DeleteModel]") {
+	sqlGenerator::DeleteModel del;
+	del.from("DeleteModel");
+	REQUIRE(del.str() == "");
+
+	SECTION("Where single condition") {
+		del.where("col1 = 3");
+		REQUIRE(del.str() == "delete from DeleteModel where col1 = 3");
+	}
+
+	SECTION("Where multiple condition") {
+		del.where("col1 = 3");
+		del.where("col2 = 'john'");
+		REQUIRE(del.str() == "delete from DeleteModel where col1 = 3 and col2 = 'john'");
+	}
+
+	SECTION("Where single condition column") {
+		del.where(sqlGenerator::column("col1") == 3);
+		REQUIRE(del.str() == "delete from DeleteModel where col1 = 3");
+	}
+
+	SECTION("Where multiple condition column") {
+		del.where(sqlGenerator::column("col1") == 3);
+		del.where(sqlGenerator::column("col2") == "john");
+		REQUIRE(del.str() == "delete from DeleteModel where col1 = 3 and col2 = 'john'");
+	}
+
+
+	SECTION("Where single condition multiple table") {
+		del.from("SecondModel");
+		del.where("col1 = 3");
+		REQUIRE(del.str() == "delete from DeleteModel, SecondModel where col1 = 3");
+	}
+
+	SECTION("Where multiple condition multiple table") {
+		del.from("SecondModel");
+		del.where("col1 = 3");
+		del.where("col2 = 'john'");
+		REQUIRE(del.str() == "delete from DeleteModel, SecondModel where col1 = 3 and col2 = 'john'");
+	}
+
+	SECTION("Where single condition column multiple table") {
+		del.from("SecondModel");
+		del.where(sqlGenerator::column("col1") == 3);
+		REQUIRE(del.str() == "delete from DeleteModel, SecondModel where col1 = 3");
+	}
+
+	SECTION("Where multiple condition column multiple table") {
+		del.from("SecondModel");
+		del.where(sqlGenerator::column("col1") == 3);
+		del.where(sqlGenerator::column("col2") == "john");
+		REQUIRE(del.str() == "delete from DeleteModel, SecondModel where col1 = 3 and col2 = 'john'");
+	}
+
+
+	SECTION("Reset") {
+		del.where(sqlGenerator::column("col1") == 3);
+		del.where(sqlGenerator::column("col2") == "john");
+		REQUIRE(del.str() == "delete from DeleteModel where col1 = 3 and col2 = 'john'");
+		del.reset();
+		REQUIRE(del.str() == "");
+	}
+}
+
+TEST_CASE("UpdateModel", "[sqlgenerator::UpdateModel]") {
+	sqlGenerator::UpdateModel update;
+	update.update("UpdateModel");
+	REQUIRE(update.str() == "");
+
+	SECTION("Single set") {
+		update.set("col1", 3);
+		REQUIRE(update.str() == "update UpdateModel set col1 = 3");
+	}
+
+	SECTION("Multiple set") {
+		update.set("col1", 3);
+		update.set("col2", 4);
+		REQUIRE(update.str() == "update UpdateModel set col1 = 3, col2 = 4");
+	}
+
+	SECTION("Single set with where single condition") {
+		update.set("col1", 3);
+		update.where("col1 = 7");
+		REQUIRE(update.str() == "update UpdateModel set col1 = 3 where col1 = 7");
+	}
+
+	SECTION("Multiple set with where single condition") {
+		update.set("col1", 3);
+		update.where("col1 = 7");
+
+		update.set("col2", "john");
+		REQUIRE(update.str() == "update UpdateModel set col1 = 3, col2 = 'john' where col1 = 7");
+	}
+
+	SECTION("Single set with where multiple condition") {
+		update.set("col1", 3);
+		update.where("col1 = 7");
+		update.where("col2 = 'dan'");
+		REQUIRE(update.str() == "update UpdateModel set col1 = 3 where col1 = 7 and col2 = 'dan'");
+	}
+
+	SECTION("Multiple set with where multiple condition") {
+		update.set("col1", 3);
+		update.where("col1 = 7");
+
+		update.set("col2", "john");
+		update.where("col2 = 'dan'");
+		REQUIRE(update.str() == "update UpdateModel set col1 = 3, col2 = 'john' where col1 = 7 and col2 = 'dan'");
+	}
+
+
+	SECTION("Single set with where single condition column") {
+		update.set("col1", 3);
+		update.where(sqlGenerator::column("col1") == 7);
+		REQUIRE(update.str() == "update UpdateModel set col1 = 3 where col1 = 7");
+	}
+
+	SECTION("Multiple set with where single condition column") {
+		update.set("col1", 3);
+		update.where(sqlGenerator::column("col1") == 7);
+
+		update.set("col2", "john");
+		REQUIRE(update.str() == "update UpdateModel set col1 = 3, col2 = 'john' where col1 = 7");
+	}
+
+	SECTION("Single set with where multiple condition") {
+		update.set("col1", 3);
+		update.where(sqlGenerator::column("col1") == 7);
+		update.where(sqlGenerator::column("col2") == "dan");
+		REQUIRE(update.str() == "update UpdateModel set col1 = 3 where col1 = 7 and col2 = 'dan'");
+	}
+
+	SECTION("Multiple set with where multiple condition column") {
+		update.set("col1", 3);
+		update.where(sqlGenerator::column("col1") == 7);
+
+		update.set("col2", "john");
+		update.where(sqlGenerator::column("col2") == "dan");
+		REQUIRE(update.str() == "update UpdateModel set col1 = 3, col2 = 'john' where col1 = 7 and col2 = 'dan'");
+	}
+}
+
+TEST_CASE("SelectModel", "[sqlgenerator::SelectModel]") {
+	sqlGenerator::SelectModel select;
+	select.from("SelectModel");
+	REQUIRE(select.str() == "");
+
+	SECTION("single select") {
+		select.select("col1");
+		REQUIRE(select.str() == "select col1 from SelectModel");
+	}
+
+	SECTION("multiple select") {
+		select.select("col1");
+		select.select("col2");
+		REQUIRE(select.str() == "select col1, col2 from SelectModel");
+	}
+
+	SECTION("multiple select join") {
+		select.select("col1");
+		select.select("col2");
+		select.join("SecondTable");
+		REQUIRE(select.str() == "select col1, col2 from SelectModel join SecondTable");
+	}
+
+	SECTION("multiple select left join") {
+		select.select("col1");
+		select.select("col2");
+		select.left_join("SecondTable");
+		REQUIRE(select.str() == "select col1, col2 from SelectModel left join SecondTable");
+	}
+
+	SECTION("multiple select left outer join") {
+		select.select("col1");
+		select.select("col2");
+		select.left_outer_join("SecondTable");
+		REQUIRE(select.str() == "select col1, col2 from SelectModel left outer join SecondTable");
+	}
+
+	SECTION("multiple select right join") {
+		select.select("col1");
+		select.select("col2");
+		select.right_join("SecondTable");
+		REQUIRE(select.str() == "select col1, col2 from SelectModel right join SecondTable");
+	}
+
+	SECTION("multiple select right outer join") {
+		select.select("col1");
+		select.select("col2");
+		select.right_outer_join("SecondTable");
+		REQUIRE(select.str() == "select col1, col2 from SelectModel right outer join SecondTable");
+	}
+
+	SECTION("multiple select full join") {
+		select.select("col1");
+		select.select("col2");
+		select.full_join("SecondTable");
+		REQUIRE(select.str() == "select col1, col2 from SelectModel full join SecondTable");
+	}
+
+	SECTION("multiple select full outer join") {
+		select.select("col1");
+		select.select("col2");
+		select.full_outer_join("SecondTable");
+		REQUIRE(select.str() == "select col1, col2 from SelectModel full outer join SecondTable");
+	}
+
+	SECTION("multiple select join on condition") {
+		select.select("col1");
+		select.select("col2");
+		select.join("SecondTable");
+		select.on(sqlGenerator::column("col1") == sqlGenerator::column("col2"));
+		REQUIRE(select.str() == "select col1, col2 from SelectModel join SecondTable on col1 = col2");
+	}
+
+	SECTION("multiple select left join on condition") {
+		select.select("col1");
+		select.select("col2");
+		select.left_join("SecondTable");
+		select.on(sqlGenerator::column("col1") == sqlGenerator::column("col2"));
+		REQUIRE(select.str() == "select col1, col2 from SelectModel left join SecondTable on col1 = col2");
+	}
+
+	SECTION("multiple select left outer join on condition") {
+		select.select("col1");
+		select.select("col2");
+		select.left_outer_join("SecondTable");
+		select.on(sqlGenerator::column("col1") == sqlGenerator::column("col2"));
+		REQUIRE(select.str() == "select col1, col2 from SelectModel left outer join SecondTable on col1 = col2");
+	}
+
+	SECTION("multiple select right join on condition") {
+		select.select("col1");
+		select.select("col2");
+		select.right_join("SecondTable");
+		select.on(sqlGenerator::column("col1") == sqlGenerator::column("col2"));
+		REQUIRE(select.str() == "select col1, col2 from SelectModel right join SecondTable on col1 = col2");
+	}
+
+	SECTION("multiple select right outer join on condition") {
+		select.select("col1");
+		select.select("col2");
+		select.right_outer_join("SecondTable");
+		select.on(sqlGenerator::column("col1") == sqlGenerator::column("col2"));
+		REQUIRE(select.str() == "select col1, col2 from SelectModel right outer join SecondTable on col1 = col2");
+	}
+
+	SECTION("multiple select full join on condition") {
+		select.select("col1");
+		select.select("col2");
+		select.full_join("SecondTable");
+		select.on(sqlGenerator::column("col1") == sqlGenerator::column("col2"));
+		REQUIRE(select.str() == "select col1, col2 from SelectModel full join SecondTable on col1 = col2");
+	}
+
+	SECTION("multiple select full outer join on condition") {
+		select.select("col1");
+		select.select("col2");
+		select.full_outer_join("SecondTable");
+		select.on(sqlGenerator::column("col1") == sqlGenerator::column("col2"));
+		REQUIRE(select.str() == "select col1, col2 from SelectModel full outer join SecondTable on col1 = col2");
+	}
+
+	SECTION("multiple select join on condition multiple") {
+		select.select("col1");
+		select.select("col2");
+		select.join("SecondTable");
+		select.on(sqlGenerator::column("col1") == sqlGenerator::column("col2"));
+		select.on(sqlGenerator::column("col3") == sqlGenerator::column("col4"));
+		REQUIRE(select.str() == "select col1, col2 from SelectModel join SecondTable on col1 = col2 and col3 = col4");
+	}
+
+	SECTION("multiple select left join on condition multiple") {
+		select.select("col1");
+		select.select("col2");
+		select.left_join("SecondTable");
+		select.on(sqlGenerator::column("col1") == sqlGenerator::column("col2"));
+		select.on(sqlGenerator::column("col3") == sqlGenerator::column("col4"));
+		REQUIRE(select.str() == "select col1, col2 from SelectModel left join SecondTable on col1 = col2 and col3 = col4");
+	}
+
+	SECTION("multiple select left outer join on condition multiple") {
+		select.select("col1");
+		select.select("col2");
+		select.left_outer_join("SecondTable");
+		select.on(sqlGenerator::column("col1") == sqlGenerator::column("col2"));
+		select.on(sqlGenerator::column("col3") == sqlGenerator::column("col4"));
+		REQUIRE(select.str() == "select col1, col2 from SelectModel left outer join SecondTable on col1 = col2 and col3 = col4");
+	}
+
+	SECTION("multiple select right join on condition multiple") {
+		select.select("col1");
+		select.select("col2");
+		select.right_join("SecondTable");
+		select.on(sqlGenerator::column("col1") == sqlGenerator::column("col2"));
+		select.on(sqlGenerator::column("col3") == sqlGenerator::column("col4"));
+		REQUIRE(select.str() == "select col1, col2 from SelectModel right join SecondTable on col1 = col2 and col3 = col4");
+	}
+
+	SECTION("multiple select right outer join on condition multiple") {
+		select.select("col1");
+		select.select("col2");
+		select.right_outer_join("SecondTable");
+		select.on(sqlGenerator::column("col1") == sqlGenerator::column("col2"));
+		select.on(sqlGenerator::column("col3") == sqlGenerator::column("col4"));
+		REQUIRE(select.str() == "select col1, col2 from SelectModel right outer join SecondTable on col1 = col2 and col3 = col4");
+	}
+
+	SECTION("multiple select full join on condition multiple") {
+		select.select("col1");
+		select.select("col2");
+		select.full_join("SecondTable");
+		select.on(sqlGenerator::column("col1") == sqlGenerator::column("col2"));
+		select.on(sqlGenerator::column("col3") == sqlGenerator::column("col4"));
+		REQUIRE(select.str() == "select col1, col2 from SelectModel full join SecondTable on col1 = col2 and col3 = col4");
+	}
+
+	SECTION("multiple select full outer join on condition multiple") {
+		select.select("col1");
+		select.select("col2");
+		select.full_outer_join("SecondTable");
+		select.on(sqlGenerator::column("col1") == sqlGenerator::column("col2"));
+		select.on(sqlGenerator::column("col3") == sqlGenerator::column("col4"));
+		REQUIRE(select.str() == "select col1, col2 from SelectModel full outer join SecondTable on col1 = col2 and col3 = col4");
+	}
+
+	SECTION("single distinct select") {
+		select.select("col1");
+		select.distinct();
+		REQUIRE(select.str() == "select distinct col1 from SelectModel");
+	}
+}
