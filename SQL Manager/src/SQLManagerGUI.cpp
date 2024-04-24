@@ -184,6 +184,7 @@ void SQLManagerGUI::on_updateButton_clicked() {
     if (Database::instance()->getDatabaseTables().size() > 0) {
     UpdatePage* updatePg = new UpdatePage();
     updatePg->show();
+    connect(updatePg, &UpdatePage::tableUpdated, this, &SQLManagerGUI::sqlCommandExecuted);
     }
     else {
         QMessageBox msgBox;
@@ -316,7 +317,7 @@ void SQLManagerGUI::dropTable(QString tableName) {
         if (FWDErrorReturn<bool> dropResult = Database::instance()->sqlExec(sqlCommand.str()))
         {
             loadTablesListView();
-            ui.commandPromptOutputTextEdit->append(QString::fromStdString(sqlCommand.str()));
+            ui.commandPromptOutputTextEdit->append(QString::fromStdString("> " + sqlCommand.str() + ";"));
         }
         else
         {

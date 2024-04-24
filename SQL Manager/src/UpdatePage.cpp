@@ -101,6 +101,22 @@ void UpdatePage::on_updateButton_clicked()
                 return;
             }
         }
+        else if (columnType == "int")
+        {
+            try
+            {
+                sqlCommand.set(columnName, std::stoi(setStatement));
+            }
+            catch (std::invalid_argument)
+            {
+                std::string errorMessage;
+                errorMessage = "Argument \"" + columnName + "\" should have type: " + columnType;
+                QMessageBox messageBox;
+                messageBox.setText(QString::fromStdString(errorMessage));
+                messageBox.exec();
+                return;
+            }
+        }
         else if (columnType == "float")
         {
             try

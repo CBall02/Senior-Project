@@ -103,6 +103,22 @@ void InsertPage::on_insertButton_clicked()
                 return;
             }
         }
+        else if (columnType == "int")
+        {
+            try
+            {
+                sqlCommand.insert(columnName, std::stoi(input));
+            }
+            catch (std::invalid_argument)
+            {
+                std::string errorMessage;
+                errorMessage = "Argument \"" + columnName + "\" should have type: " + columnType;
+                QMessageBox messageBox;
+                messageBox.setText(QString::fromStdString(errorMessage));
+                messageBox.exec();
+                return;
+            }
+        }
         else if (columnType == "float")
         {
             try
