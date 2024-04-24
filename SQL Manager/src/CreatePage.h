@@ -4,6 +4,7 @@
 #include <qcombobox.h>
 #include <QCheckBox>
 #include <vector>
+#include <map>
 #include "ui_CreatePage.h"
 #include "database.h"
 
@@ -26,6 +27,7 @@ private:
 	std::vector<QLineEdit*> tableNames;
 	std::vector<QComboBox*> tableTypes;
 	std::vector<QCheckBox*> tableConstraints;
+	std::map<QComboBox*, QHBoxLayout*> findLayout;
 
 private slots:
 	void on_plusButton_clicked();
@@ -33,5 +35,5 @@ private slots:
 	void on_minusButton_clicked();
 	void primaryKeyClicked();
 	void uniqueOrNotNullClicked();
-	void on_type_changed();
+	void on_type_changed(int index);
 };
