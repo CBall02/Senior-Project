@@ -49,6 +49,7 @@ void CreatePage::addAttribute()
 	newLine->addWidget(unique);
 	newLine->addWidget(notNull);
 
+	connect(type, SIGNAL(currentIndexChanged(int)), this, SLOT(on_type_changed(int)));
 	connect(primaryKey, SIGNAL(clicked()), this, SLOT(primaryKeyClicked()));
 	connect(unique, SIGNAL(clicked()), this, SLOT(uniqueOrNotNullClicked()));
 	connect(notNull, SIGNAL(clicked()), this, SLOT(uniqueOrNotNullClicked()));
@@ -58,6 +59,7 @@ void CreatePage::addAttribute()
 	tableConstraints.push_back(primaryKey);
 	tableConstraints.push_back(unique);
 	tableConstraints.push_back(notNull);
+	findLayout.emplace(type, newLine);
 
 	attribute->setLayout(newLine);
 	attribute->setFixedHeight(40);
@@ -120,7 +122,22 @@ void CreatePage::on_createButton_clicked()
 		}
 		else if (typeIndex == 2)
 		{
-			typeString = "varchar(20)";
+			QHBoxLayout* varcharRow = findLayout.at(tableTypes.at(i));
+			QLineEdit* varcharLengthInput = qobject_cast<QLineEdit*>(varcharRow->itemAt(2)->widget());
+			std::string varcharLength = varcharLengthInput->text().toStdString();
+			try
+			{
+				std::stoi(varcharLength);
+			}
+			catch (std::invalid_argument)
+			{
+				std::string errorMessage = "varchar must have an integer length";
+				QMessageBox messageBox;
+				messageBox.setText(QString::fromStdString(errorMessage));
+				messageBox.exec();
+				return;
+			}
+			typeString = "varchar(" + varcharLength + ")";
 		}
 		else if (typeIndex == 3)
 		{
@@ -171,6 +188,30 @@ void CreatePage::uniqueOrNotNullClicked() {
 			{
 				tableConstraints.at(3 * i)->setCheckState(Qt::Unchecked);
 			}
+		}
+	}
+}
+
+void CreatePage::on_type_changed(int index)
+{
+	QComboBox* type = qobject_cast<QComboBox*>(sender());
+	QHBoxLayout* row = findLayout.at(type);
+	if (type->currentIndex() == 2) //text == "varchar"
+	{
+		if (row->count() == 5)
+		{
+			QLineEdit* num = new QLineEdit();
+			num->setFixedWidth(28);
+			row->insertWidget(2, num);
+		}
+	}
+	else
+	{
+		if (row->count() == 6)
+		{
+			QLayoutItem* toDelete = row->takeAt(2);
+			delete toDelete->widget();
+			delete toDelete;
 		}
 	}
 }
