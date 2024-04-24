@@ -182,3 +182,107 @@ TEST_CASE("Database 4") {
 	REQUIRE(query->numFields() == 5);
 	REQUIRE(query->eof());
 }
+
+TEST_CASE("Database::parseSchema Test") {
+	Database::instance()->openDatabase(":memory:");
+	sqlGenerator::CreateModel create;
+	create.tableName("company");
+	create.columns("id", "int", true, true, true)
+		("name", "varchar(30)", false, true)
+		("age", "int", false, true)
+		("address", "varchar(50)", false, true)
+		("salary", "float", false, true);
+
+	Database::Column idInfo;
+	idInfo.name = "id";
+	idInfo.type = "int";
+	idInfo.isPrimary = true;
+	idInfo.isNotNull = true;
+	idInfo.isUnique = true;
+
+	Database::Column nameInfo;
+	nameInfo.name = "name";
+	nameInfo.type = "varchar(30)";
+	nameInfo.isPrimary = false;
+	nameInfo.isNotNull = true;
+	nameInfo.isUnique = false;
+
+	Database::Column ageInfo;
+	ageInfo.name = "age";
+	ageInfo.type = "int";
+	ageInfo.isPrimary = false;
+	ageInfo.isNotNull = true;
+	ageInfo.isUnique = false;
+
+	Database::Column addressInfo;
+	addressInfo.name = "address";
+	addressInfo.type = "varchar(50)";
+	addressInfo.isPrimary = false;
+	addressInfo.isNotNull = true;
+	addressInfo.isUnique = false;
+
+	Database::Column salaryInfo;
+	salaryInfo.name = "salary";
+	salaryInfo.type = "float";
+	salaryInfo.isPrimary = false;
+	salaryInfo.isNotNull = true;
+	salaryInfo.isUnique = false;
+
+	auto created = Database::instance()->sqlExec(create.str());
+	REQUIRE(created);
+	REQUIRE(created.result == true);
+	auto schema = Database::instance()->getTableSchema("company");
+	REQUIRE(schema.size() == 5);
+
+	
+	REQUIRE(schema[0].name == idInfo.name);
+	REQUIRE(schema[0].type == idInfo.type);
+	REQUIRE(schema[0].isPrimary == idInfo.isPrimary);
+	REQUIRE(schema[0].isNotNull == idInfo.isNotNull);
+	REQUIRE(schema[0].isUnique == idInfo.isUnique);
+	
+	
+	REQUIRE(schema[1].name == nameInfo.name);
+	REQUIRE(schema[1].type == nameInfo.type);
+	REQUIRE(schema[1].isPrimary == nameInfo.isPrimary);
+	REQUIRE(schema[1].isNotNull == nameInfo.isNotNull);
+	REQUIRE(schema[1].isUnique == nameInfo.isUnique);
+
+	REQUIRE(schema[2].name == ageInfo.name);
+	REQUIRE(schema[2].type == ageInfo.type);
+	REQUIRE(schema[2].isPrimary == ageInfo.isPrimary);
+	REQUIRE(schema[2].isNotNull == ageInfo.isNotNull);
+	REQUIRE(schema[2].isUnique == ageInfo.isUnique);
+
+	REQUIRE(schema[3].name == addressInfo.name);
+	REQUIRE(schema[3].type == addressInfo.type);
+	REQUIRE(schema[3].isPrimary == addressInfo.isPrimary);
+	REQUIRE(schema[3].isNotNull == addressInfo.isNotNull);
+	REQUIRE(schema[3].isUnique == addressInfo.isUnique);
+
+	REQUIRE(schema[4].name == salaryInfo.name);
+	REQUIRE(schema[4].type == salaryInfo.type);
+	REQUIRE(schema[4].isPrimary == salaryInfo.isPrimary);
+	REQUIRE(schema[4].isNotNull == salaryInfo.isNotNull);
+	REQUIRE(schema[4].isUnique == salaryInfo.isUnique);
+}
+
+TEST_CASE("GetTable") {
+	Database::instance()->openDatabase(":memory:");
+	sqlGenerator::CreateModel create;
+	create.tableName("company");
+	create.columns("id", "int", true, true, true)
+		("name", "varchar(30)", false, true)
+		("age", "int", false, true)
+		("address", "varchar(50)", false, true)
+		("salary", "float", false, true);
+	auto table = Database::instance()->getTable("company");
+	REQUIRE_FALSE(table);
+
+	auto created = Database::instance()->sqlExec(create.str());
+	REQUIRE(created);
+	REQUIRE(created.result == true);
+	table = Database::instance()->getTable("company");
+	REQUIRE(table);	 
+}
+
